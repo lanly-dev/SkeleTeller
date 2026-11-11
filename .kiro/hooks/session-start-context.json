@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "SkeleTeller Session Context",
+      "trigger": "SessionStart",
+      "description": "Display SkeleTeller project context at session start",
+      "action": {
+        "type": "agent",
+        "prompt": "You are working on SkeleTeller, a Kiroween 2026 Skeleton Crew entry.\n\n## Quick Context\n- **Project:** Skeleton for generating project demos from storyboards\n- **Phase Status:** Check AGENTS.md for current phase\n- **Two Apps:** demo-video (MP4 render) + slide-walkthrough (interactive web)\n- **Key Files:**\n  - Storyboard schema: skeleton/schema/storyboard.schema.json\n  - Sample: skeleton/examples/sample-project.yml\n  - Specs: .kiro/specs/\n  - Steering: .kiro/steering/\n\n## Important Rules\n- Read AGENTS.md first every session\n- Spec-first: specs before implementation\n- No absolute paths (use repo-relative only)\n- Never gitignore .kiro/\n\n## Common Commands\n- Validate storyboard: python skeleton/schema/validator.py <file.yml>\n- Generate assets: python skeleton/examples/generate-assets.py\n\nCheck AGENTS.md for current phase and open decisions."
+      }
+    }
+  ]
+}

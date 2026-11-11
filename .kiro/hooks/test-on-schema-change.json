@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Test Validator on Schema Changes",
+      "trigger": "PostFileSave",
+      "description": "Auto-test validator when schema or validator code changes",
+      "matcher": "skeleton/schema/.*\\.py$|skeleton/schema/.*\\.json$",
+      "action": {
+        "type": "command",
+        "command": "if echo \"$KIRO_FILE_PATH\" | grep -q \"skeleton/schema/.*\\.py\"; then python skeleton/schema/validator.py skeleton/examples/sample-project.yml 2>&1; fi; exit 0",
+        "timeout": 15
+      }
+    }
+  ]
+}

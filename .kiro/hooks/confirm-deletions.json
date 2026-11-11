@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Confirm File Deletions",
+      "trigger": "PreToolUse",
+      "description": "Ask for confirmation before file deletion operations",
+      "matcher": "delete_file",
+      "action": {
+        "type": "command",
+        "command": "echo \"{\\\"hookSpecificOutput\\\":{\\\"permissionDecision\\\":\\\"ask\\\",\\\"permissionDecisionReason\\\":\\\"This operation will delete files. Please confirm you want to proceed.\\\"}}\" ; exit 0",
+        "timeout": 5
+      }
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "name": "Generate Storyboard from Project",
+  "description": "Analyzes a project's README and assets to generate a draft storyboard for SkeleTeller",
+  "version": "1.0",
+  "inputs": {
+    "project_path": {
+      "type": "string",
+      "description": "Path to the project directory containing README and screenshots",
+      "required": true
+    },
+    "output_path": {
+      "type": "string",
+      "description": "Path where the generated storyboard YAML should be saved",
+      "default": "storyboard.yml"
+    }
+  },
+  "steps": [
+    {
+      "id": "analyze",
+      "name": "Analyze Project",
+      "agent": "wf-planner",
+      "prompt": "Analyze the project at {{project_path}}. Read the README, examine any screenshots or assets, and identify:\n1. Project name and description\n2. 3-5 key features that should be highlighted\n3. Available visual assets (screenshots, diagrams)\n4. Code samples or integration examples\n\nProduce a structured analysis that will inform the storyboard generation.",
+      "outputs": {
+        "analysis": "analysis.md"
+      }
+    },
+    {
+      "id": "draft_storyboard",
+      "name": "Draft Storyboard",
+      "agent": "wf-coder",
+      "prompt": "Based on the analysis from the previous step, create a SkeleTeller storyboard YAML file.\n\nFollow the schema at skeleton/schema/storyboard.schema.json.\n\nGuidelines from .kiro/steering/storyboard-drafting.md:\n- 5-8 scenes total\n- Start with title scene (project name + tagline)\n- Include 3-5 feature scenes showing key capabilities\n- Add 1 code scene if applicable\n- End with outro scene (call-to-action)\n- Each scene duration: 3-8 seconds\n- Total duration: under 3 minutes\n\nReference assets relative to the storyboard file location.\n\nSave the storyboard to {{output_path}}.",
+      "outputs": {
+        "storyboard": "{{output_path}}"
+      }
+    },
+    {
+      "id": "validate",
+      "name": "Validate Storyboard",
+      "agent": "wf-coder",
+      "prompt": "Run the validator on the generated storyboard:\n\npython skeleton/schema/validator.py {{output_path}}\n\nIf validation fails, fix the errors and re-validate. The storyboard must pass schema validation before this step completes.",
+      "outputs": {
+        "validation_result": "validation.txt"
+      }
+    },
+    {
+      "id": "summarize",
+      "name": "Summarize Storyboard",
+      "agent": "wf-coder",
+      "prompt": "Create a summary of the generated storyboard:\n- Project name\n- Number of scenes\n- Total duration\n- Scene breakdown (type, caption for each)\n- Assets referenced\n- Any missing assets that need to be created\n\nSave the summary as a markdown file.",
+      "outputs": {
+        "summary": "storyboard-summary.md"
+      }
+    }
+  ],
+  "outputs": {
+    "storyboard_path": "{{output_path}}",
+    "summary": "{{summarize.summary}}"
+  }
+}
