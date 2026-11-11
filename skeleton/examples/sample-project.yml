@@ -1,0 +1,81 @@
+version: "1.0"
+
+project:
+  name: "TaskFlow"
+  description: "A lightweight task management tool for developers"
+  repository: "https://github.com/example/taskflow"
+
+metadata:
+  total_duration: 40
+  target_audience: "developers"
+  created: "2026-11-11"
+
+scenes:
+  # Opening
+  - type: title
+    title: "TaskFlow"
+    tagline: "Task management that fits your workflow"
+    background: "assets/title-bg.png"
+    duration: 3
+
+  # Feature 1: Dashboard overview
+  - type: feature
+    visual: "assets/dashboard.png"
+    caption: "Track tasks across projects with a unified dashboard"
+    narration: "The dashboard provides an at-a-glance view of all your tasks, organized by project and priority. Quickly see what's blocked, in progress, or ready for review."
+    duration: 7
+
+  # Feature 2: Quick add
+  - type: feature
+    visual: "assets/quick-add.png"
+    caption: "Add tasks in seconds with smart parsing"
+    narration: "Type naturally and TaskFlow extracts due dates, priorities, and tags. No forms, no clicks — just type and hit enter."
+    duration: 6
+
+  # Callout: UI details
+  - type: callout
+    visual: "assets/task-detail.png"
+    caption: "Rich task details without leaving the list"
+    callouts:
+      - x: 200
+        y: 180
+        label: "Inline editing"
+      - x: 520
+        y: 180
+        label: "Subtasks"
+      - x: 720
+        y: 180
+        label: "Time tracking"
+    narration: "Edit any field inline, manage subtasks, track time, and link related tasks — all without opening a separate dialog."
+    duration: 6
+
+  # Code: CLI integration
+  - type: code
+    caption: "Integrate with your terminal workflow"
+    code:
+      language: "bash"
+      snippet: |
+        # Add a task from the command line
+        taskflow add "Fix login bug" --priority high --due tomorrow
+        
+        # List today's tasks
+        taskflow list --due today
+        
+        # Mark a task complete
+        taskflow done 42
+      highlight_lines: [2]
+    narration: "TaskFlow includes a CLI for developers who live in the terminal. Add, list, and complete tasks without leaving your shell."
+    duration: 8
+
+  # Feature 3: GitHub integration
+  - type: feature
+    visual: "assets/github-integration.png"
+    caption: "Sync issues and PRs from GitHub automatically"
+    narration: "Connect your GitHub repos and TaskFlow pulls in issues and pull requests. Update status in TaskFlow and it syncs back to GitHub."
+    duration: 6
+
+  # Closing
+  - type: outro
+    caption: "Open source • MIT License • github.com/example/taskflow"
+    visual: "assets/outro-bg.png"
+    duration: 4

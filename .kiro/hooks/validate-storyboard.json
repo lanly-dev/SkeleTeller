@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Validate Storyboard on Save",
+      "trigger": "PostFileSave",
+      "description": "Automatically validates YAML storyboard files after save using the SkeleTeller schema validator",
+      "matcher": ".*\\.yml$|.*\\.yaml$",
+      "action": {
+        "type": "command",
+        "command": "python skeleton/schema/validator.py \"$KIRO_FILE_PATH\" 2>&1 || exit 0",
+        "timeout": 10
+      }
+    }
+  ]
+}

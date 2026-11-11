@@ -1,0 +1,207 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://skeleteller.dev/schema/storyboard.v1.json",
+  "title": "SkeleTeller Storyboard",
+  "description": "A storyboard specification for generating demo videos and slide walkthroughs",
+  "type": "object",
+  "required": ["version", "project", "scenes"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^1\\.0$",
+      "description": "Schema version (currently 1.0)"
+    },
+    "project": {
+      "type": "object",
+      "required": ["name", "description"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "Project name"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "description": "Brief project description"
+        },
+        "repository": {
+          "type": "string",
+          "format": "uri",
+          "description": "Project repository URL (optional)"
+        },
+        "website": {
+          "type": "string",
+          "format": "uri",
+          "description": "Project website URL (optional)"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "total_duration": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 180,
+          "description": "Total duration in seconds (should match sum of scene durations)"
+        },
+        "target_audience": {
+          "type": "string",
+          "description": "Intended audience (e.g., developers, end-users, stakeholders)"
+        },
+        "created": {
+          "type": "string",
+          "format": "date",
+          "description": "Creation date (YYYY-MM-DD)"
+        }
+      }
+    },
+    "scenes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "required": ["type", "duration"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["title", "feature", "callout", "code", "outro"],
+            "description": "Scene type"
+          },
+          "duration": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 30,
+            "description": "Duration in seconds for video output"
+          },
+          "visual": {
+            "type": "string",
+            "description": "Path to visual asset (relative to storyboard file)"
+          },
+          "caption": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Short caption text (displayed as overlay)"
+          },
+          "narration": {
+            "type": "string",
+            "maxLength": 1000,
+            "description": "Longer narration text (for slide walkthrough detail)"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": { "type": { "const": "title" } }
+            },
+            "then": {
+              "required": ["title"],
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100,
+                  "description": "Project title"
+                },
+                "tagline": {
+                  "type": "string",
+                  "maxLength": 200,
+                  "description": "Project tagline or subtitle"
+                },
+                "background": {
+                  "type": "string",
+                  "description": "Path to background image"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": { "type": { "const": "feature" } }
+            },
+            "then": {
+              "required": ["visual", "caption"]
+            }
+          },
+          {
+            "if": {
+              "properties": { "type": { "const": "callout" } }
+            },
+            "then": {
+              "required": ["visual", "caption"],
+              "properties": {
+                "callouts": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "required": ["x", "y", "label"],
+                    "properties": {
+                      "x": {
+                        "type": "number",
+                        "description": "X coordinate (pixels from left)"
+                      },
+                      "y": {
+                        "type": "number",
+                        "description": "Y coordinate (pixels from top)"
+                      },
+                      "label": {
+                        "type": "string",
+                        "maxLength": 100,
+                        "description": "Callout label text"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": { "type": { "const": "code" } }
+            },
+            "then": {
+              "required": ["caption", "code"],
+              "properties": {
+                "code": {
+                  "type": "object",
+                  "required": ["language", "snippet"],
+                  "properties": {
+                    "language": {
+                      "type": "string",
+                      "description": "Programming language (e.g., python, javascript, yaml)"
+                    },
+                    "snippet": {
+                      "type": "string",
+                      "description": "Code snippet text"
+                    },
+                    "highlight_lines": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "description": "Line numbers to highlight (1-indexed)"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": { "type": { "const": "outro" } }
+            },
+            "then": {
+              "required": ["caption"]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

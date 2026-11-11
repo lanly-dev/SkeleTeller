@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.pnp/
+.pnp.js
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Build outputs
+apps/demo-video/output/
+apps/slide-walkthrough/dist/
+apps/slide-walkthrough/build/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# DO NOT IGNORE .kiro/ — required for Kiroween compliance
+# .kiro/  ← NEVER UNCOMMENT THIS
