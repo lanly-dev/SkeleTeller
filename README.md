@@ -1,5 +1,9 @@
 # SkeleTeller
 
+<p align="center">
+  <img src="assets/icon.png" width="180" alt="SkeleTeller — a skeleton wizard conjuring a demo video from an open storybook">
+</p>
+
 **A Kiroween 2026 Skeleton Crew Entry**
 
 SkeleTeller tells a project's story from its bones — the storyboard. Write one storyboard specification, get two outputs:
