@@ -3,30 +3,33 @@
 Kiroween 2026 entry — **Skeleton Crew**. Read this file first in every session on this project.
 
 ## Status
-- **PIVOT DECIDED 2026-11-11:** this entry is now a skeleton for programmatically producing a demo of a project from **one storyboard spec → two outputs: a demo video and an interactive slide walkthrough**. The original proof apps (Tarotomb, PostMortem) are **retired** — do not revive them for this entry.
+- **PIVOT DECIDED 2026-11-18 (Lan): App A is changed from Demo Video to Demo Game.** Reason, in Lan's own framing: a video is not an application — you play it, you don't run it. App A is now a **playable video game**: a character runs around a world themed on the target app, and running around it conveys/demos the app (each storyboard scene is an area; its feature is what you find and interact with there). The old `apps/demo-video/` folder and the `/.kiro` demo-video specs are **superseded** — do not implement them; Kiro writes a fresh demo-game spec before any game code. This changes App A only: the storyboard concept, the skeleton, and App B (slide walkthrough) are unchanged. The Kiroween submission still requires a <3 min YouTube demo video — that video is now a **recording** of playing the game + paging the walkthrough, not an app output.
+- **PIVOT DECIDED 2026-11-11:** this entry is now a skeleton for programmatically producing a demo of a project from **one storyboard spec → two outputs: a demo game and an interactive slide walkthrough**. The original proof apps (Tarotomb, PostMortem) are **retired** — do not revive them for this entry.
 - **Output-2 clarification (2026-11-11):** the second output is **not an interactive demo of the target project itself** — it is a **slide walkthrough of the same storyboard, interactive like a storybook**: the viewer turns the pages/slides themselves, clicks hotspots/callouts to reveal the explanation, and moves at their own pace. The slides carry the project's captures and story; they do not run the project live.
-- **Name DECIDED 2026-11-11: SkeleTeller** (skeleton + storyteller — it tells a project's story from its bones, the storyboard; replaces the Boneprint working title). Collision check run 2026-11-11: no exact "SkeleTeller" found in web / GitHub / Devpost searches. **Watch-out:** every search fuzzy-matches **Skeletor** (the Mattel character, plus existing Skeletor-named software — a UI build-tool ecosystem and skeleton-generator packages) — expect search confusion; trademark registers and domain availability NOT checked. The two apps are functional titles for now — Video Demo and Slide Walkthrough (proposed labels: SkeleTeller Reel / SkeleTeller Storybook — confirm before specs are written).
-- Repo `lanly-dev/skeleteller` — **not yet created**. Do not create it, register anything, or request credits until given the go in this project's side chat.
+- **Name DECIDED 2026-11-11: SkeleTeller** (skeleton + storyteller — it tells a project's story from its bones, the storyboard; replaces the Boneprint working title). Collision check run 2026-11-11: no exact "SkeleTeller" found in web / GitHub / Devpost searches. **Watch-out:** every search fuzzy-matches **Skeletor** (the Mattel character, plus existing Skeletor-named software — a UI build-tool ecosystem and skeleton-generator packages) — expect search confusion; trademark registers and domain availability NOT checked. The two apps are functional titles for now — Demo Game and Slide Walkthrough (proposed labels: SkeleTeller Quest / SkeleTeller Storybook — confirm before specs are written).
+- Repo `lanly-dev/SkeleTeller` — **created and public** (Phase 0/1 skeleton + `/.kiro` specs built in Kiro; app icon committed). The demo-video specs/folder in it predate the 2026-11-18 pivot and are superseded (see top Status bullet).
 - Deadline: **Fri Dec 4, 2026, 2:00 PM PT**. This is the biggest of the four entries and the long pole of the schedule — it starts first.
 
 ## What this is
 A skeleton (boilerplate) for a repeatable demo-building procedure. The procedure: take a project (its README / description / screenshots or captures), let Kiro draft a **storyboard spec** — an ordered list of scenes with narration/caption text, visuals, and callouts — then run the procedure to **programmatically produce two tellings of that single storyboard**:
-1. a rendered **demo video** (the story told *to* you), and
+1. a playable **demo game** (the story you *run around in*: a character explores a world themed on the project, and each area conveys one scene/feature of it), and
 2. a hosted **interactive slide walkthrough** (the same story as a storybook you page through yourself).
 
-The skeleton is two layers: (1) the procedure code — storyboard schema, scene/slide primitives, capture/asset step, render/build steps; and (2) the Kiro layer — spec templates, steering docs, and hooks that live in the skeleton's `/.kiro`, which is how the storyboard gets drafted from a new project. To demo a new project: copy the skeleton, write a storyboard spec, let Kiro fill the project-specific parts, run the procedure.
+The skeleton is two layers: (1) the procedure code — storyboard schema, scene/game/slide primitives, capture/asset step, game-build and slide-build steps; and (2) the Kiro layer — spec templates, steering docs, and hooks that live in the skeleton's `/.kiro`, which is how the storyboard gets drafted from a new project. To demo a new project: copy the skeleton, write a storyboard spec, let Kiro fill the project-specific parts, run the procedure.
+
+**How a user uses it (the intended flow):** a user clones this template and opens it in Kiro, points Kiro at their own project (README, description, screenshots), and asks Kiro to build their demo. Kiro — guided by the template's `/.kiro` steering, schema, and specs — drafts the **storyboard spec** for their project; the user trims/approves it; then the procedure generates that project's two apps from it: the themed demo game and the slide walkthrough. The storyboard spec is the contract: both apps are produced by following it, and nothing project-specific is hand-coded per project.
 
 ## Category fit + the one hard structural rule
 Skeleton Crew: build a lean, clear skeleton code template and prove its versatility with two distinct applications. **The repo must contain 2 separate folders for the 2 separate applications.** Layout (fixed):
-- `skeleton/` — the template itself (storyboard schema + scene/slide primitives + procedure + its `/.kiro` templates/steering/hooks).
-- `apps/demo-video/` — App A: storyboard → rendered demo video.
+- `skeleton/` — the template itself (storyboard schema + scene/game/slide primitives + procedure + its `/.kiro` templates/steering/hooks).
+- `apps/demo-game/` — App A: storyboard → playable demo game.
 - `apps/slide-walkthrough/` — App B: the same storyboard format → interactive, storybook-style slide walkthrough.
 The entry's own repo-level `/.kiro` also exists at root per the general package rules.
 
-Judges' test: the two apps must be genuinely different creatures on the same bones — one is *watch* (a rendered video), the other is *turn the pages yourself* (slides with storybook interactivity). Different format, interaction model, and output, sharing one storyboard format and the same scene primitives. Two rendered videos, or a reskin, fails the category.
+Judges' test: the two apps must be genuinely different creatures on the same bones — one is *play* (a game world you run around in), the other is *turn the pages yourself* (slides with storybook interactivity). Different format, interaction model, and output, sharing one storyboard format and the same scene primitives. Two slide decks, or a reskin, fails the category.
 
 ## The two apps
-**App A — Demo Video.** Takes a storyboard spec and programmatically renders it into a demo video (under 3 minutes): title → feature scenes with captures, zooms/callouts, caption/narration text → outro. Proves the skeleton's render pipeline.
+**App A — Demo Game.** Takes a storyboard spec and generates a playable 2D walk-around game themed on the target app. Each scene becomes an area/room in storyboard order: title scene = start area (project name + tagline), feature scenes = areas where running to the feature's station/sign/interactable shows its capture with caption/callouts, a code scene = a terminal-style interactable, outro = the goal/exit area. The world is skinned in the target app's theme — palette, props, signage, and mood come from the storyboard and its assets — so running around the game *is* touring the app. Playable in the browser (keyboard + touch). Proves the skeleton's game-generation side, and the output is unambiguously an application.
 **App B — Slide Walkthrough.** Takes the *same* storyboard spec and builds a hosted, storybook-style walkthrough: each scene becomes a page/slide with the same visual, callouts, and text. Interactivity is slide-level only — page/step navigation (next/back, progress, keyboard), clickable hotspots/callouts that reveal the explanation, optional page-flip feel. It does **not** embed or run the target project. Proves the skeleton's web/interaction side — and supplies the working app URL a video file alone might not.
 
 ## Hard rules (Kiroween)
@@ -61,7 +64,7 @@ Sources: the hackathon overview, the Official Rules, and the Resources tab at ki
 - **Public GitHub repo** (NOT GitLab or BitBucket) containing **all** source code, assets, and instructions required for the project to be functional.
 - An **open-source license file**, detectable and visible at the top of the repo page (About section).
 - **`/.kiro` directory at the root of the project**, showing usage of specs, hooks, and steering. **Do NOT add the `/.kiro` directory or sub-folders to `.gitignore`, as this could disqualify the submission.**
-- **Skeleton Crew only:** the repo must contain **2 separate repo folders for the 2 separate applications** (this entry's `apps/demo-video/` + `apps/slide-walkthrough/` layout satisfies this — keep them genuinely separate).
+- **Skeleton Crew only:** the repo must contain **2 separate repo folders for the 2 separate applications** (this entry's `apps/demo-game/` + `apps/slide-walkthrough/` layout satisfies this — keep them genuinely separate).
 
 ### Submission package (all items required)
 - The category selected, plus any bonus prizes being claimed.
@@ -93,30 +96,31 @@ Sources: the hackathon overview, the Official Rules, and the Resources tab at ki
 - Keep the project free and unrestricted for judges through Jan 29, 2027.
 
 ## Scope caps (these are what keep 3 deliverables shippable)
-- Skeleton stays LEAN: the storyboard schema, **~5 fixed scene types** (title, feature/capture, callout/zoom, code-or-spec highlight, outro), the capture/asset step, one render step, one slide build step, and the Kiro layer. Anything only one output needs belongs in that app, not the skeleton.
+- Skeleton stays LEAN: the storyboard schema, **~5 fixed scene types** (title, feature/capture, callout/zoom, code-or-spec highlight, outro), the capture/asset step, one game build step, one slide build step, and the Kiro layer. Anything only one output needs belongs in that app, not the skeleton.
+- Game stays LEAN: one fixed 2D walk-around engine — a chain of areas in storyboard order, one character, walk + interact only. **No combat, enemies, inventory, puzzles, physics, multiplayer, or procedural level generation** beyond scenes → areas. The per-project theme is a reskin (palette, props, signs, avatar, captured screenshots on stations) driven by storyboard data — never a bespoke game per project. Building a game engine kills this entry the same way building an editor would have.
 - **No visual editor, no timeline UI.** The storyboard is a file (spec) you edit; Kiro drafts it, a human trims it. Building an editor kills this entry.
 - Slide-walkthrough interactivity stays storybook-level: paging, hotspots/callouts, progress. No live embedding of the demoed project, no in-slide app simulation beyond the storyboard's own captures.
 - Narration is captions / narration text (TTS optional if it comes free from the stack) — no voice pipeline work beyond that.
 - No accounts, no project hosting, no saved history beyond local files. The input is one project + one storyboard per run.
 
 ## Acceptance checks
-- [ ] One storyboard spec produces BOTH outputs (demo video + slide walkthrough) with no hand-editing of app code in between.
+- [ ] One storyboard spec produces BOTH outputs (demo game + slide walkthrough) with no hand-editing of app code in between.
 - [ ] Editing the storyboard (change a scene's text, reorder scenes) changes both outputs accordingly on a re-run.
 - [ ] A demo for a sample project can be produced from `skeleton/` by following the skeleton README alone.
-- [ ] Demo Video and Slide Walkthrough each run from their own folder, from the working URL(s) (walkthrough hosted; video app has a player/preview page), sharing visibly the same storyboard and scene primitives.
-- [ ] Dogfood: the procedure produces a real demo for at least one other entry (e.g. Skinwalker or SpectreGram), and this entry's own submission video is produced by App A.
+- [ ] Demo Game and Slide Walkthrough each run from their own folder, from the working URL(s) (both hosted; the game is actually playable in the browser — character moves, areas in storyboard order, interactables show the captures/captions), sharing visibly the same storyboard and scene primitives.
+- [ ] Dogfood: the procedure produces a real demo for at least one other entry (e.g. Skinwalker or SpectreGram), and this entry's own submission video is a recording of playing App A's game and paging through App B.
 
 ## Packaging checklist
 - [ ] Public repo with the folder layout above + MIT license + `/.kiro`.
 - [ ] Working URLs for BOTH apps.
-- [ ] Demo video < 3 min, public YouTube — and it is itself App A's output: three clear acts: the skeleton + storyboard spec (~30s) → the rendered demo video playing (~60s) → the slide walkthrough being paged through (~60s).
+- [ ] Demo video < 3 min, public YouTube — a screen recording, not an app output: three clear acts: the skeleton + storyboard spec (~30s) → the demo game being played, character running around the themed world (~60s) → the slide walkthrough being paged through (~60s).
 - [ ] Devpost description + Kiro-usage write-up — for this entry the write-up is a scoring surface: specs, steering, hooks, and the draft-storyboard-from-a-project moment get named explicitly. Frame App B honestly as an interactive slide/storybook walkthrough, never as a live demo of the target project.
 - [ ] Blog post (Bonus Blog prize) + one social post starting with `#KiroweenHackathon26`.
 
 ## Open decisions
-1. App names final? (Skeleton name is DECIDED: SkeleTeller. Proposed app labels: SkeleTeller Reel / SkeleTeller Storybook — confirm before specs are written.)
-2. Stack: render stack for the video app + one web stack for the slide app, sharing the single storyboard schema — confirm at spec time.
+1. App names final? (Skeleton name is DECIDED: SkeleTeller. Proposed app labels: SkeleTeller Quest / SkeleTeller Storybook — confirm before specs are written.)
+2. Stack: one web stack for both apps (game = 2D canvas-style walk-around; slides = static web), sharing the single storyboard schema — confirm at spec time. The repo's current demo-video spec/stack (Python + FFmpeg) is superseded by the 2026-11-18 pivot.
 3. First dogfood project: this entry itself, or Skinwalker / SpectreGram first?
 
 ## How we work
-Plan → Work → Assess → Compound. Lessons go into this file the moment they are earned; decisions update Open decisions the same session. Start order for the whole Kiroween board is THIS project first (longest pole); within it: skeleton (schema + scene primitives) → Demo Video (proves the render) → Slide Walkthrough (proves the second creature) → dogfood on a real project. The pre-pivot order (skeleton → PostMortem → Tarotomb) is superseded.
+Plan → Work → Assess → Compound. Lessons go into this file the moment they are earned; decisions update Open decisions the same session. Start order for the whole Kiroween board is THIS project first (longest pole); within it: skeleton (schema + scene primitives) → Demo Game (proves the game generation) → Slide Walkthrough (proves the second creature) → dogfood on a real project. The pre-pivot order (skeleton → PostMortem → Tarotomb) is superseded.
