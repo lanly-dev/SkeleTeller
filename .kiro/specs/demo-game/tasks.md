@@ -78,3 +78,9 @@
 
 **Review gate:** after T9 the game is playable. T10 to T12 prove versatility and
 hosting.
+
+## Status
+
+- **2026-11-20, Kiro Web:** shared prepare helper and T0 to T5, merged as PR #1. Checked locally: tests, typecheck, validate and the build all pass.
+- **2026-11-20, Kiro IDE:** T6 (draw.ts), T7 (panel.ts) and T8 (main.ts) done, plus text.ts helpers with tests. The station moved 60 px above the walking line (see design.md). `dev` and `build` now read `demo/storyboard.yml`; `dev:sample` and `build:sample` use the sample. The prepare wrapper clears `public/` and the generated JSON before copying.
+- **Keyboard tour verified in headless Edge:** each station panel opens with E and closes with Escape, the title sign has no panel, callout hotspot 2 reveals its label, the outro shows the safe repository link, and the left door works. No console errors. Not verified yet: touch (T9) and a real phone.

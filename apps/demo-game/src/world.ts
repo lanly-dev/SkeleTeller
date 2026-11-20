@@ -51,8 +51,15 @@ const STATION_KIND: Record<SceneType, StationKind> = {
   outro: 'exit',
 };
 
-/** Center of the area. Fixed, so the same storyboard always gives the same world. */
-const STATION_POSITION = { x: WORLD_WIDTH / 2, y: WORLD_HEIGHT / 2 };
+/** How far the station sits above the door-to-door walking line. */
+export const STATION_OFFSET_Y = 60;
+
+/**
+ * Centered horizontally, a little above the walking line, so a character walking
+ * straight between the doors passes in front of the station instead of through it.
+ * Fixed, so the same storyboard always gives the same world.
+ */
+const STATION_POSITION = { x: WORLD_WIDTH / 2, y: WORLD_HEIGHT / 2 - STATION_OFFSET_Y };
 
 /** One area per scene, in scene order. Reads scene types only, never layout hints. */
 export function layoutWorld(storyboard: Pick<Storyboard, 'scenes'>): Area[] {

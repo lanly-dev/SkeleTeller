@@ -35,7 +35,7 @@ desktop.ini
 # Build outputs
 apps/demo-game/dist/
 apps/demo-game/src/generated/
-apps/demo-game/public/assets/
+apps/demo-game/public/
 apps/slide-walkthrough/dist/
 apps/slide-walkthrough/build/
 

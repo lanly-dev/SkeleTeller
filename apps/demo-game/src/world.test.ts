@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import yaml from 'js-yaml';
 import { describe, expect, it } from 'vitest';
 import type { Storyboard } from '../../../skeleton/src/types';
+import { isNearStation } from './game';
 import { layoutWorld, WALK_BOUNDS, DOORWAY, WORLD_HEIGHT, WORLD_WIDTH } from './world';
 
 const sample = yaml.load(fs.readFileSync(new URL('../../../skeleton/examples/sample-project.yml', import.meta.url), 'utf8')) as Storyboard;
@@ -55,6 +56,15 @@ describe('layoutWorld', () => {
 });
 
 describe('geometry', () => {
+  it('places stations above the door-to-door line, within prompt range of it', () => {
+    const walkLine = (DOORWAY.top + DOORWAY.bottom) / 2;
+    for (const area of layoutWorld(sample)) {
+      expect(area.station.y).toBeLessThan(walkLine);
+      // Walking straight between the doors brings every interactable station into range.
+      if (area.sceneType !== 'title') expect(isNearStation(area, area.station.x, walkLine)).toBe(true);
+    }
+  });
+
   it('puts the doorway gap in the middle of the screen height', () => {
     expect(DOORWAY.top).toBeLessThan(WORLD_HEIGHT / 2);
     expect(DOORWAY.bottom).toBeGreaterThan(WORLD_HEIGHT / 2);

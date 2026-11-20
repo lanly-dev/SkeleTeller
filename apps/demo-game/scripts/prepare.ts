@@ -26,10 +26,15 @@ if (['install', 'ci'].includes(process.env.npm_command ?? '')) {
 
 const storyboard = pickStoryboard(process.argv[2]);
 const shown = path.relative(repoRoot, storyboard);
+// Clear the output of any earlier storyboard so its assets do not linger in the build.
+const publicDir = path.join(appDir, 'public');
+fs.rmSync(publicDir, { recursive: true, force: true });
+fs.rmSync(path.join(appDir, 'src/generated'), { recursive: true, force: true });
+
 const result = prepareStoryboard({
   storyboard,
   outJson: path.join(appDir, 'src/generated/storyboard.json'),
-  outAssets: path.join(appDir, 'public'),
+  outAssets: publicDir,
 });
 
 if (result.ok) {

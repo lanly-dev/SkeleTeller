@@ -4,9 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SkeleTeller Quest</title>
+    <link rel="icon" href="data:," />
   </head>
   <body>
-    <canvas id="game" width="960" height="540"></canvas>
+    <main id="stage">
+      <canvas id="game" width="960" height="540" aria-label="Game world. Use the arrow keys or WASD to walk, and E to open a station."></canvas>
+      <p id="live" class="sr-only" aria-live="polite"></p>
+    </main>
+    <div id="panel" hidden></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

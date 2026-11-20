@@ -5,8 +5,10 @@
   "license": "MIT",
   "scripts": {
     "prepare": "tsx scripts/prepare.ts",
-    "dev": "npm run prepare -- ../../skeleton/examples/sample-project.yml && vite",
-    "build": "npm run prepare -- ../../skeleton/examples/sample-project.yml && tsc --noEmit && vite build",
+    "dev": "npm run prepare && vite",
+    "build": "npm run prepare && tsc --noEmit && vite build",
+    "dev:sample": "npm run prepare -- ../../skeleton/examples/sample-project.yml && vite",
+    "build:sample": "npm run prepare -- ../../skeleton/examples/sample-project.yml && tsc --noEmit && vite build",
     "test": "vitest run"
   },
   "devDependencies": {

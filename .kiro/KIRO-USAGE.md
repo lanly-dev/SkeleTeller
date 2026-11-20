@@ -4,7 +4,7 @@ A working draft of the Kiro-usage write-up for the Kiroween 2026 submission. It
 describes only what the repository shows today. Update it as each phase lands,
 and check every claim against `git log` and the files before submitting.
 
-Last checked: 2026-11-19, after the storyboard schema and validator landed.
+Last checked: 2026-11-20, after demo-game T8.
 
 ## Kiro surfaces
 
@@ -13,7 +13,9 @@ Last checked: 2026-11-19, after the storyboard schema and validator landed.
   repository (two reviewers on different models, then an aggregator). Its findings
   drove the cleanup of the post-pivot specs, schema, hooks and this write-up. The
   review reports are local working files and are not committed.
-- **Kiro CLI, Kiro Web, MCP, Powers, custom agents:** not used so far.
+- **Kiro Web:** built the first half of the game (shared prepare helper and demo-game T0 to T5) in autonomous mode from a single prompt that pointed it at `AGENTS.md` and the task list. It worked overnight with no questions, one commit per task, and opened PR #1 (merged after a review fix). The specs and steering in the repo were enough context: it touched no spec or retired file. Its one deviation, build scripts hard-wired to the sample storyboard instead of `demo/`, was caught in the IDE and fixed there.
+- **Kiro IDE after the Web batch:** the drawing, panels and wiring (T6 to T8) need someone to look at the screen, so they were built in the IDE and checked with screenshots from a headless browser driven over the DevTools protocol. The first screenshot showed the character drawn on top of the station, which led to a design change recorded in the spec before the code.
+- **Kiro CLI, MCP, Powers, custom agents:** not used so far.
 
 ## Spec-driven development
 
