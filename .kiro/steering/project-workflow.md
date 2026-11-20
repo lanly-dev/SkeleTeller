@@ -17,7 +17,7 @@ A skeleton that turns one storyboard (YAML) into two apps:
 - **App B, SkeleTeller Storybook** (`apps/slide-walkthrough/`): an interactive slide walkthrough.
 
 App A used to be a rendered demo video. That was retired on 2026-11-18. Do not
-implement anything under `.kiro/specs/demo-video/` or `.kiro/specs/demo-video-app.md`.
+implement anything under `.kiro/specs/demo-video/`, `.kiro/specs/demo-video-app.md` or `.kiro/specs/slide-walkthrough-app.md`.
 
 ## Specs come first
 
@@ -26,7 +26,7 @@ Every part has a folder in `.kiro/specs/` with `requirements.md`, `design.md` an
 - `storyboard-schema`: the contract and validator
 - `storyboard-intake`: drafting a storyboard from a project source
 - `demo-game`: App A
-- `slide-walkthrough`: App B (spec not written yet)
+- `slide-walkthrough`: App B
 
 Rules:
 - Write or update the spec and commit it before the code it covers.
@@ -38,8 +38,8 @@ Rules:
 
 TypeScript and Node, Vite, Canvas 2D for the game, static pages for the slides,
 Ajv and js-yaml for validation, Vitest for tests, GitHub Pages for hosting. No UI
-framework. Pin dependency versions exactly. The old Python validator in
-`skeleton/schema/validator.py` stays until the schema spec's T6 removes it.
+framework. Pin dependency versions exactly. Validate a storyboard with
+`npm run validate -- <file>`. Run tests with `npm test`.
 
 ## Hard rules
 

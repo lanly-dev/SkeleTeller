@@ -14,8 +14,10 @@
 - **Done:** `npm run dev` shows a blank canvas page and `npm run build` is green.
 
 ## T1 — `scripts/prepare.ts`
-- Read storyboard path (default `demo/storyboard.yml`), validate with the shared
-  validator, enforce asset containment, write generated JSON, copy assets.
+- Read storyboard path (default `demo/storyboard.yml`) and call the shared
+  `prepareStoryboard` from `skeleton/src/prepare.ts` (see `slide-walkthrough`
+  design and its task T1, which adds it). It validates, enforces asset containment,
+  writes generated JSON and copies assets.
 - **Done:** the sample storyboard prepares cleanly. A missing asset and an
   escaping path each fail with a clear message and non-zero exit.
 

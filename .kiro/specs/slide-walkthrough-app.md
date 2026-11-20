@@ -1,4 +1,4 @@
-> **NEEDS REWRITE before implementation.** This flat spec predates the schema and game specs. Known gaps: floating CDN versions conflict with its own offline criterion, storyboard values are interpolated without encoding, callout coordinates are absolute pixels, and it reads YAML in the browser. The replacement is `.kiro/specs/slide-walkthrough/` (requirements, design, tasks), to be written after `storyboard-schema`. Do not build from this file.
+> **SUPERSEDED 2026-11-19.** Replaced by `.kiro/specs/slide-walkthrough/` (requirements, design, tasks), which fixes this draft's gaps: floating CDN versions against its own offline criterion, storyboard values inserted without encoding, absolute-pixel callouts, and YAML parsing in the browser. Do not build from this file. Kept for history only.
 
 # Slide Walkthrough App Spec
 

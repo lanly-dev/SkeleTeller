@@ -92,7 +92,9 @@ function loadStoryboard(file: string): { storyboard: Storyboard } | { errors: Is
 ## CLI
 
 `node skeleton/src/cli.ts <storyboard>` (run through `tsx`) prints one line per
-issue, then a summary with project name and scene count. Exit code is zero only
+issue, then a summary with project name and scene count. With no file given it
+checks the default targets that exist: `skeleton/examples/sample-project.yml` and
+`demo/storyboard.yml`. Hooks rely on this, so they never need the saved file's path. Exit code is zero only
 when there are no errors. It exposes the root script `npm run validate -- <file>`.
 
 ## Defaults

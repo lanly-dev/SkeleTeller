@@ -8,7 +8,7 @@
       "matcher": "delete_file",
       "action": {
         "type": "command",
-        "command": "echo \"{\\\"hookSpecificOutput\\\":{\\\"permissionDecision\\\":\\\"ask\\\",\\\"permissionDecisionReason\\\":\\\"This operation will delete files. Please confirm you want to proceed.\\\"}}\" ; exit 0",
+        "command": "node .kiro/hooks/scripts/confirm-delete.mjs",
         "timeout": 5
       }
     }

@@ -33,7 +33,9 @@ Thumbs.db
 desktop.ini
 
 # Build outputs
-apps/demo-video/output/
+apps/demo-game/dist/
+apps/demo-game/src/generated/
+apps/demo-game/public/assets/
 apps/slide-walkthrough/dist/
 apps/slide-walkthrough/build/
 
@@ -41,6 +43,9 @@ apps/slide-walkthrough/build/
 *.tmp
 *.temp
 .cache/
+
+# Source project material for storyboard drafting (may be private)
+project/
 
 # Local agent working output (review reports, task notes)
 .agents/

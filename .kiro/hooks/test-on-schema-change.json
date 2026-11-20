@@ -4,12 +4,12 @@
     {
       "name": "Test Validator on Schema Changes",
       "trigger": "PostFileSave",
-      "description": "Auto-test validator when schema or validator code changes",
-      "matcher": "skeleton/schema/.*\\.py$|skeleton/schema/.*\\.json$",
+      "description": "Run the storyboard schema and validator test suite when the schema or validator code is saved",
+      "matcher": "(^|[\\\\/])skeleton[\\\\/](schema|src)[\\\\/].*\\.(json|ts)$",
       "action": {
         "type": "command",
-        "command": "if echo \"$KIRO_FILE_PATH\" | grep -q \"skeleton/schema/.*\\.py\"; then python skeleton/schema/validator.py skeleton/examples/sample-project.yml 2>&1; fi; exit 0",
-        "timeout": 15
+        "command": "npm test --silent",
+        "timeout": 60
       }
     }
   ]

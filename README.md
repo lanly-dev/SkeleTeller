@@ -8,8 +8,8 @@
 
 SkeleTeller tells a project's story from its bones — the storyboard. Write one storyboard specification, get two outputs:
 
-1. **Demo Game** — A playable 2D walk-around game themed on your project: a character runs around its world, and each area conveys a feature
-2. **Slide Walkthrough** — An interactive, storybook-style web presentation
+1. **SkeleTeller Quest** — A playable 2D walk-around game themed on your project: a character runs around its world, and each area conveys a feature
+2. **SkeleTeller Storybook** — An interactive, storybook-style slide walkthrough you page through yourself
 
 ## What is This?
 
@@ -23,32 +23,34 @@ SkeleTeller is a skeleton (boilerplate) for producing software demos programmati
 
 ```
 skeleton/              # The reusable template
-├── schema/           # Storyboard format and validator
-├── scene-types/      # Scene primitive documentation
+├── schema/           # Storyboard JSON Schema
+├── src/              # Shared TypeScript validator, loader, CLI and tests
+├── scene-types/      # Scene type reference
 ├── examples/         # Sample storyboard with assets
 └── README.md         # How to use the skeleton
 
 apps/
-├── demo-game/        # App A: storyboard → playable game
-└── slide-walkthrough/ # App B: storyboard → interactive web app
+├── demo-game/        # App A, SkeleTeller Quest: storyboard → playable game
+└── slide-walkthrough/ # App B, SkeleTeller Storybook: storyboard → interactive slides
 
-.kiro/                # Kiro layer (specs, steering, hooks)
+demo/                 # Your storyboard and assets (drafted by Kiro)
+
+.kiro/                # Kiro layer: specs, steering, hooks, workflows
 ```
 
 ## Quick Start
 
-1. **Write a storyboard** (or use the example):
+1. **Clone this repo and open it in Kiro.** Run `npm install` once.
+2. **Point Kiro at your project.** Give it a local folder path or a public GitHub URL and ask it to draft a storyboard. Kiro writes `demo/storyboard.yml` and copies the screenshots it picks into `demo/assets/`.
+3. **Trim the draft by hand** and check it:
    ```bash
-   cp skeleton/examples/sample-project.yml my-project.yml
+   npm run validate -- demo/storyboard.yml
    ```
+4. **Build the two apps** from `demo/`. The game and the slides are still being built, so these commands are planned:
+   - Game: `npm run build -w apps/demo-game`
+   - Slides: `npm run build -w apps/slide-walkthrough`
 
-2. **Gather your assets** (screenshots, code snippets) and reference them in the storyboard
-
-3. **Generate outputs:**
-   - Game: build/run `apps/demo-game/` with your storyboard (see that app's README)
-   - Slides: `cd apps/slide-walkthrough && npm run build ../../my-project.yml`
-
-See `skeleton/README.md` for detailed instructions.
+See `skeleton/README.md` for the full procedure.
 
 ## Scene Types
 
@@ -57,15 +59,14 @@ SkeleTeller supports 5 scene types:
 - **Title** — Project name, tagline, intro
 - **Feature** — Show a capability with a screenshot
 - **Callout** — Highlight specific UI elements with annotations
-- **Code** — Display code snippets with syntax highlighting
+- **Code** — Display a code snippet with highlighted lines
 - **Outro** — Closing frame, call-to-action
 
 Each scene becomes an area in the game AND an interactive slide.
 
 ## Requirements
 
-- Python 3.8+ (for storyboard validation)
-- Node.js 16+ (for the game and slide walkthrough)
+- Node.js 20 or later (validation, and building both apps)
 - A web browser (the game and the walkthrough both run in it)
 
 ## License

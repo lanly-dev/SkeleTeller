@@ -1,285 +1,134 @@
 # SkeleTeller Skeleton
 
-This is the reusable template for creating project demos. One storyboard specification produces two outputs: a demo video and an interactive slide walkthrough.
+The reusable part of SkeleTeller. One storyboard file drives two apps:
+**SkeleTeller Quest** (a playable walk-around game) and **SkeleTeller Storybook**
+(an interactive slide walkthrough). This folder holds the storyboard contract and
+the shared validator both apps use.
 
-## What's in the Skeleton?
+## Contents
 
 ```
 skeleton/
-├── schema/
-│   ├── storyboard.schema.json    # JSON Schema for storyboards
-│   └── validator.py              # Validation script
-├── scene-types/
-│   └── README.md                 # Scene type reference
-├── examples/
-│   ├── sample-project.yml        # Example storyboard
-│   ├── assets/                   # Sample assets
-│   └── generate-assets.py        # Asset generator
-└── README.md                     # This file
+  schema/storyboard.schema.json   the storyboard contract (JSON Schema)
+  src/                            shared validator, loader, CLI, tests (TypeScript)
+  scene-types/README.md           what each scene type needs and how it appears
+  examples/sample-project.yml     a complete sample storyboard
+  examples/assets/                placeholder captures used by the sample
 ```
 
-## Quick Start
+## Make a demo of your project
 
-### 1. Install Dependencies
+### 1. Set up
 
-**Python (for validation and video rendering):**
-```bash
-pip install PyYAML jsonschema Pillow
-```
+Clone the repo, open it in Kiro, and install once from the repo root:
 
-**Node.js (for slide walkthrough):**
 ```bash
 npm install
 ```
 
-### 2. Create a Storyboard
+Node.js 20 or later is required.
 
-Start with the example:
+### 2. Point Kiro at your project
+
+Tell Kiro where your project is. Either form works:
+
+- A local folder: "Draft a storyboard from `../my-app`."
+- A public GitHub repo: "Draft a storyboard from https://github.com/you/my-app."
+
+You can also put the project's README and screenshots in a `project/` folder in
+this repo (git ignores it) and say "Draft a storyboard from `project/`."
+
+Kiro follows `.kiro/steering/storyboard-drafting.md`. It reads the README, picks
+real UI screenshots, writes `demo/storyboard.yml`, copies the screenshots into
+`demo/assets/`, and validates the result. It asks you when it cannot find enough
+screenshots. The same steps are packaged as the workflow in
+`.kiro/workflows/generate-storyboard.workflow.json`.
+
+### 3. Trim the draft
+
+Open `demo/storyboard.yml` and edit it by hand: shorten captions, reorder scenes,
+remove what you don't need. Five to eight scenes is a good size. Then check it:
+
 ```bash
-cp skeleton/examples/sample-project.yml my-project.yml
+npm run validate -- demo/storyboard.yml
 ```
 
-Edit `my-project.yml` to tell your project's story. See [Scene Types Reference](scene-types/README.md) for details.
+With no file given, `npm run validate` checks the sample and `demo/storyboard.yml`.
+Every problem is listed with its scene number. The command exits non-zero on any
+error, including a missing image. Saving a storyboard in Kiro runs the same check
+through a hook.
 
-**Storyboard Structure:**
+### 4. Build the apps
+
+Both apps read `demo/` only. They are still being built, so these commands are
+planned and follow the app specs in `.kiro/specs/`:
+
+```bash
+npm run build -w apps/demo-game          # SkeleTeller Quest
+npm run build -w apps/slide-walkthrough  # SkeleTeller Storybook
+```
+
+Change the storyboard and rebuild to update both. No app code is edited per project.
+
+## Storyboard format
+
 ```yaml
 version: "1.0"
 
 project:
-  name: "YourProject"
-  description: "What your project does"
+  name: "MyApp"
+  description: "What it does, in one sentence"
+  repository: "https://github.com/you/my-app"   # optional, http or https only
 
-metadata:
-  total_duration: 45  # Sum of all scene durations
-  target_audience: "developers"
-
-scenes:
-  - type: title
-    title: "YourProject"
-    tagline: "Your value proposition"
-    duration: 3
-    # ... scene-specific fields
-
-  - type: feature
-    visual: "assets/screenshot1.png"
-    caption: "Your feature description"
-    duration: 6
-
-  # ... more scenes
-
-  - type: outro
-    caption: "github.com/you/project"
-    duration: 4
-```
-
-### 3. Gather Assets
-
-Create an `assets/` directory next to your storyboard:
-```bash
-mkdir assets
-```
-
-Add your screenshots, diagrams, and visual assets. Reference them in the storyboard with relative paths: `visual: "assets/screenshot1.png"`
-
-**Asset Requirements:**
-- **Format:** PNG or JPG
-- **Resolution:** 1920x1080 (Full HD) recommended
-- **Aspect Ratio:** 16:9
-
-### 4. Validate
-
-Check your storyboard before generating outputs:
-```bash
-python skeleton/schema/validator.py my-project.yml
-```
-
-Fix any validation errors. The validator checks:
-- Schema compliance (required fields, valid scene types)
-- Duration consistency (metadata matches scene sum)
-- Asset existence (warns if files are missing)
-
-### 5. Generate Outputs
-
-**Demo Video:**
-```bash
-cd apps/demo-video
-python render.py ../../my-project.yml
-# Output: output/demo.mp4
-```
-
-**Slide Walkthrough:**
-```bash
-cd apps/slide-walkthrough
-npm run build ../../my-project.yml
-# Output: dist/index.html
-```
-
-## Scene Types
-
-SkeleTeller supports 5 scene types. Each type has specific required fields:
-
-| Type | Purpose | Key Fields |
-|------|---------|------------|
-| `title` | Opening frame | `title`, `tagline`, `background` |
-| `feature` | Show a capability | `visual`, `caption` |
-| `callout` | Highlight UI details | `visual`, `caption`, `callouts` |
-| `code` | Display code snippets | `caption`, `code` (language, snippet) |
-| `outro` | Closing frame | `caption` |
-
-See [scene-types/README.md](scene-types/README.md) for complete reference with examples.
-
-## Storyboard Best Practices
-
-**Keep it focused**
-- 5-8 scenes total
-- Under 3 minutes (for video output)
-- One idea per scene
-
-**Show, don't just tell**
-- Every scene needs a strong visual
-- Let screenshots do the talking
-- Captions should complement, not repeat the visual
-
-**Follow a narrative arc**
-- Problem → Solution → Features → Call-to-action
-- Or: Title → Feature tour → Integration → Outro
-
-**Duration guidelines**
-- Title: 3-4 seconds
-- Features: 5-8 seconds
-- Code: 6-8 seconds (code takes longer to read)
-- Outro: 3-4 seconds
-
-## File Organization
-
-When using the skeleton for a new project, organize files like this:
-
-```
-my-project-demo/
-├── storyboard.yml          # Your storyboard
-├── assets/                 # Visual assets
-│   ├── title-bg.png
-│   ├── feature1.png
-│   └── ...
-└── output/                 # Generated outputs
-    ├── demo.mp4           # Rendered video
-    └── slides/            # Built slide walkthrough
-```
-
-## Validation Reference
-
-The validator checks:
-
-✅ **Schema validation**
-- All required fields present
-- Valid scene types (`title`, `feature`, `callout`, `code`, `outro`)
-- Field types match schema (strings, numbers, arrays)
-- Constraints met (max durations, max caption length)
-
-⚠️ **Warnings (non-blocking)**
-- `total_duration` mismatch with scene sum
-- Missing asset files
-
-Common errors and fixes:
-
-| Error | Fix |
-|-------|-----|
-| Missing required field `caption` | Add `caption` to the scene |
-| Invalid scene type | Use one of the 5 valid types |
-| Duration exceeds maximum | Scene durations must be ≤ 30s |
-| Empty `callouts` array | Callout scenes need ≥1 callout object |
-
-## Examples
-
-### Minimal Storyboard (5 scenes, 28 seconds)
-
-```yaml
-version: "1.0"
-project:
-  name: "QuickDemo"
-  description: "Minimal demo example"
-
-metadata:
-  total_duration: 28
+theme:              # optional, every field optional
+  palette:
+    background: "#1a2332"
+    ground: "#26364d"
+    accent: "#ffb347"
+    text: "#f2f5f9"
+    station: "#4fc3f7"
+  mood: "clean"     # cozy | neon | spooky | clean
+  avatar: "explorer" # explorer | robot | ghost
+  props: ["plant", "lamp"]  # up to 8 of: plant lamp crate sign bookshelf banner
 
 scenes:
   - type: title
-    title: "QuickDemo"
-    tagline: "Fast and simple"
-    duration: 3
-
+    title: "MyApp"
+    tagline: "One-line value"
   - type: feature
-    visual: "assets/ui.png"
-    caption: "Clean, intuitive interface"
-    duration: 6
-
-  - type: callout
-    visual: "assets/detail.png"
-    caption: "One-click actions"
-    callouts:
-      - {x: 100, y: 200, label: "Action button"}
-    duration: 5
-
-  - type: code
-    caption: "Simple integration"
-    code:
-      language: "python"
-      snippet: |
-        import quickdemo
-        result = quickdemo.run()
-    duration: 7
-
+    visual: "assets/dashboard.png"
+    caption: "What this screen does"
   - type: outro
-    caption: "github.com/you/quickdemo"
-    duration: 4
+    caption: "github.com/you/my-app"
 ```
 
-## Tips
+- Scenes appear in the order written. Each becomes one game area and one slide.
+- Image paths are relative to the storyboard file and must stay inside its folder.
+- Unknown or misspelled fields are errors, so typos are caught early.
+- When `theme` is left out, both apps use a built-in default look.
+- There is no duration field. Both outputs are self-paced.
 
-**Starting from scratch?**
-1. Identify your 3-4 key features
-2. Take screenshots of each
-3. Write a caption for each (1-2 sentences)
-4. Add title and outro scenes
-5. Validate and generate
+See [scene-types/README.md](scene-types/README.md) for each scene type's fields.
 
-**Need help drafting a storyboard?**
-- Use the Kiro steering guide: see `.kiro/steering/storyboard-drafting.md`
-- Ask Kiro to draft a first version from your README and screenshots
-- Refine the generated storyboard by hand
+## Limits
 
-**Asset tips:**
-- Capture at consistent resolution (1920x1080)
-- Use high contrast for code snippets
-- Crop screenshots to focus on relevant UI
-- Name files descriptively: `feature-dashboard.png`, not `img1.png`
+- **Private repositories:** Kiro cannot fetch a private GitHub URL. Use a local
+  folder path instead.
+- **No live capture:** Kiro does not screenshot a running app. The images must
+  already exist in the project, or you supply them.
+- **Image rights:** use screenshots from your own project, or one you have
+  permission to use.
 
-## Next Steps
+## Developing the skeleton
 
-Once you have a validated storyboard:
+```bash
+npm test            # schema and validator tests
+npm run typecheck   # strict TypeScript check
+```
 
-1. **Generate the demo video** with `apps/demo-video/`
-2. **Build the slide walkthrough** with `apps/slide-walkthrough/`
-3. Both outputs share the same storyboard — edit once, rebuild both
-
-See the app-specific READMEs for rendering/building instructions:
-- [apps/demo-video/README.md](../apps/demo-video/README.md)
-- [apps/slide-walkthrough/README.md](../apps/slide-walkthrough/README.md)
-
-## Troubleshooting
-
-**Validation fails with "file not found"**
-→ Check that asset paths are relative to the storyboard file
-
-**"YAML parsing error"**
-→ Check indentation (use spaces, not tabs) and multiline string syntax
-
-**Total duration warning**
-→ Recalculate: sum all scene durations and update `metadata.total_duration`
-
-**Assets not loading in outputs**
-→ Ensure assets are in the correct relative path from the storyboard file
+The schema and validator are specified in `.kiro/specs/storyboard-schema/`.
+Saving a file under `skeleton/schema/` or `skeleton/src/` runs the tests through a hook.
 
 ## License
 
-MIT — see repository root LICENSE file
+MIT, see the repository root `LICENSE`.

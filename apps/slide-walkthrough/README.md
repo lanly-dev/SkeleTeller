@@ -1,57 +1,38 @@
-# Slide Walkthrough App
+# SkeleTeller Storybook (Slide Walkthrough)
 
-**Status:** Not yet implemented (Phase 3)
+**Status:** specified, not built yet. The spec is in
+`.kiro/specs/slide-walkthrough/` (requirements, design, tasks). It is built after
+the demo game is playable.
 
-This app builds an interactive, storybook-style slide walkthrough from a storyboard.
+App B of SkeleTeller. It builds a static, storybook-style walkthrough from the same
+storyboard as the game. The viewer pages through one slide per scene at their own
+pace and clicks hotspots to reveal explanations. It does not embed or run the
+demoed project.
 
-## Architecture (Planned)
+## How scenes appear
 
-**Stack:** Static HTML/CSS/JS (vanilla or Alpine.js)
+| Scene | Slide |
+|---|---|
+| `title` | Title page |
+| `feature` | Capture and caption, with narration on request |
+| `callout` | Capture with numbered hotspots that reveal their labels |
+| `code` | Snippet with highlighted lines |
+| `outro` | Closing page with the repository link |
 
-**Features:**
-- Page/slide navigation (next/back, progress indicator)
-- Keyboard controls (arrow keys, space)
-- Clickable hotspots for callouts
-- Optional page-flip animation
-- Responsive layout
+## Controls (planned)
 
-**Output:** Static web app deployable to GitHub Pages, Netlify, or Vercel
+- Next and back buttons, and a progress bar where each step jumps to its slide.
+- Arrow keys, Page Up and Page Down, Space, Home and End.
+- Swipe left or right on touch screens.
+- The slide number is kept in the URL, so a link opens the same slide.
 
-## Usage (Planned)
-
-```bash
-cd apps/slide-walkthrough
-npm install
-npm run build ../../path/to/storyboard.yml
-```
-
-Output will be in `dist/` or `build/`, ready to deploy.
-
-## Interactivity (Planned)
-
-- **Navigation:** Next/previous buttons, progress dots, keyboard shortcuts
-- **Callouts:** Clickable hotspots reveal explanations
-- **Code scenes:** Syntax highlighting with Prism.js
-- **Narration:** Expandable detail sections for longer text
-
-## Scene Rendering (Planned)
-
-Each scene becomes an HTML slide:
-
-- **Title:** Hero section with title + tagline
-- **Feature:** Full-width image + caption
-- **Callout:** Image with clickable hotspot markers
-- **Code:** Syntax-highlighted code block
-- **Outro:** Call-to-action with link
-
-## Dependencies (Planned)
+## Usage (planned)
 
 ```bash
-npm install js-yaml prismjs
+npm run dev -w apps/slide-walkthrough      # serve locally
+npm run build -w apps/slide-walkthrough    # static build from demo/storyboard.yml
 ```
 
-No build framework required (or use Vite for minimal bundling).
-
----
-
-This will be implemented in Phase 3 after demo-video app is complete.
+The build validates the storyboard first and fails with scene numbers when
+something is wrong. The output has no external requests and can be hosted on any
+static host.

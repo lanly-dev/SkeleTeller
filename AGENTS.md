@@ -118,8 +118,8 @@ Sources: the hackathon overview, the Official Rules, and the Resources tab at ki
 - [ ] Blog post (Bonus Blog prize) + one social post starting with `#KiroweenHackathon26`.
 
 ## Open decisions
-1. App names final? (Skeleton name is DECIDED: SkeleTeller. Proposed app labels: SkeleTeller Quest / SkeleTeller Storybook — confirm before specs are written.)
-2. Stack: one web stack for both apps (game = 2D canvas-style walk-around; slides = static web), sharing the single storyboard schema — confirm at spec time. The repo's current demo-video spec/stack (Python + FFmpeg) is superseded by the 2026-11-18 pivot.
+1. ~~App names final?~~ **DECIDED 2026-11-19:** SkeleTeller Quest (App A, demo game) and SkeleTeller Storybook (App B, slide walkthrough).
+2. ~~Stack?~~ **DECIDED 2026-11-19:** one web stack for the whole repo. Vite + TypeScript (strict, no UI framework); Canvas 2D for the game, static pages for the slides; one shared TypeScript validator (Ajv + js-yaml) in `skeleton/`; Vitest; GitHub Pages via GitHub Actions. Python and FFmpeg dropped with the video app. Recorded in `/.kiro/specs/skeleteller-core.md`.
 3. First dogfood project: this entry itself, or Skinwalker / SpectreGram first?
 
 ## How we work

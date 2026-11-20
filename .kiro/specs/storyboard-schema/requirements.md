@@ -100,3 +100,7 @@ slides and the intake workflow.
 ## Out of scope for v1
 - Localization fields.
 - Per-scene theme overrides.
+
+## Acceptance record
+
+- **2026-11-19:** T0 to T7 done. `npm test` passes (53 tests). `npm run typecheck` is clean. `npm run validate` passes on the sample and exits non-zero on a broken storyboard, listing every error with its scene number. The three command hooks were run in Windows PowerShell 5.1 and work. Partial mutation check: removing callout `minItems` and the feature scene's `additionalProperties` each made tests fail. The other rules were not mutation-checked. Requirement 1 (removing the validator breaks both app builds) is checked when the apps exist.

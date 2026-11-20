@@ -38,3 +38,7 @@
 - Search `demo/` for absolute paths.
 - Record the result in the spec as a short dated note.
 - **Done:** all four checks in the design's Testing section pass.
+
+## Status
+
+- **2026-11-19:** T0 to T4 done (`demo/` folder, `project/` ignored, workflow and steering updated, skeleton README rewritten, missing assets fail validation). T5, the end-to-end run against a real project, is still open.
