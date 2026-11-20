@@ -4,7 +4,7 @@ A working draft of the Kiro-usage write-up for the Kiroween 2026 submission. It
 describes only what the repository shows today. Update it as each phase lands,
 and check every claim against `git log` and the files before submitting.
 
-Last checked: 2026-11-20, after demo-game T8.
+Last checked: 2026-11-20, after the Storybook (Phase 3) build.
 
 ## Kiro surfaces
 
@@ -15,6 +15,7 @@ Last checked: 2026-11-20, after demo-game T8.
   review reports are local working files and are not committed.
 - **Kiro Web:** built the first half of the game (shared prepare helper and demo-game T0 to T5) in autonomous mode from a single prompt that pointed it at `AGENTS.md` and the task list. It worked overnight with no questions, one commit per task, and opened PR #1 (merged after a review fix). The specs and steering in the repo were enough context: it touched no spec or retired file. Its one deviation, build scripts hard-wired to the sample storyboard instead of `demo/`, was caught in the IDE and fixed there.
 - **Kiro IDE after the Web batch:** the drawing, panels and wiring (T6 to T8) need someone to look at the screen, so they were built in the IDE and checked with screenshots from a headless browser driven over the DevTools protocol. The first screenshot showed the character drawn on top of the station, which led to a design change recorded in the spec before the code.
+- **Kiro IDE for Phase 3:** the Storybook was built in the IDE from its spec, which was committed before any of its code. Its pure modules (slide model, router, theme) were written test-first against the sample storyboard. The browser checks found three problems the unit tests could not: the browser's back gesture swallowing a swipe, a large gap in the stacked phone layout, and an off-screen live region making the window scroll. Each was fixed and rechecked.
 - **Kiro CLI, MCP, Powers, custom agents:** not used so far.
 
 ## Spec-driven development

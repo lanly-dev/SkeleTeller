@@ -14,7 +14,7 @@ SkeleTeller tells a project's story from its bones — the storyboard. Write one
 ## Try it
 
 - **SkeleTeller Quest:** https://lanly-dev.github.io/SkeleTeller/quest/
-- **SkeleTeller Storybook:** coming next
+- **SkeleTeller Storybook:** https://lanly-dev.github.io/SkeleTeller/storybook/
 
 Both are built from the same sample storyboard, `skeleton/examples/sample-project.yml`.
 
@@ -53,7 +53,7 @@ demo/                 # Your storyboard and assets (drafted by Kiro)
    ```bash
    npm run validate -- demo/storyboard.yml
    ```
-4. **Build the two apps** from `demo/`. The game and the slides are still being built, so these commands are planned:
+4. **Build the two apps** from `demo/`:
    - Game: `npm run build -w apps/demo-game`
    - Slides: `npm run build -w apps/slide-walkthrough`
 

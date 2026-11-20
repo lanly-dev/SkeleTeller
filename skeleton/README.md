@@ -60,8 +60,7 @@ through a hook.
 
 ### 4. Build the apps
 
-Both apps read `demo/` only. They are still being built, so these commands are
-planned and follow the app specs in `.kiro/specs/`:
+Both apps read `demo/` only. Each app's README has the dev server and sample commands:
 
 ```bash
 npm run build -w apps/demo-game          # SkeleTeller Quest

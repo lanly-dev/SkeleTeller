@@ -96,3 +96,22 @@ pace and clicks hotspots to reveal explanations.
 - No editor, comments, accounts, analytics or saved progress beyond the URL fragment.
 - No syntax highlighting library. Highlighted lines and a language label only.
 - No print or PDF export.
+
+## Acceptance record
+
+Run on 2026-11-20 in the Kiro IDE, against `vite preview` with headless Edge (Chromium) driven over the DevTools protocol. Fixtures for 1, 7, 8 and 10 were the same 4-scene storyboard used for the game: reordered scenes, no theme block, HTML markup in a caption and a callout label, and one image deleted from the build.
+
+| # | Requirement | Result |
+|---|---|---|
+| 1 | One slide per scene | **Pass.** The sample gives 7 slides in order; the 4-scene storyboard gave 4 slides in its own order (also `slides.test.ts`). |
+| 2 | Paging | **Pass.** Back is disabled on slide 1 and Next on slide 7; Next, Back and each progress step reach their slide. |
+| 3 | Keyboard and touch | **Pass in emulation.** Right, Left, Page Down, Page Up, Space, Home and End all page. Swipe left and right page on a 390 by 844 touch viewport; the first try was taken by the browser's back gesture, fixed with `touch-action: pan-y` and `overscroll-behavior-x: none`. Every control has a visible focus ring. **Open:** a real phone. |
+| 4 | Hotspots | **Pass.** At 1280, 900 and 390 px wide, each hotspot's center sits at its storyboard coordinate (0.100,0.170 / 0.270,0.170 / 0.380,0.170) to three decimals. One label at a time; Escape closes it. |
+| 5 | Narration | **Pass.** "Read the narration" opens the scene's narration. |
+| 6 | Shareable position | **Pass.** Loading `#/4` and reloading stay on slide 4; `#/99` opens slide 1; browser back returns to the previous slide (also `router.test.ts`). |
+| 7 | Theme | **Pass.** The sample and `sample-spooky.yml` give visibly different books with no code change (screenshots). No theme block falls back to the default palette. Unreadable text colors are replaced (`theme.test.ts`). |
+| 8 | Build and run | **Pass.** A missing image fails with "scene 2, visual: … file not found"; `build`, `build:sample` and `dev:sample` work; the output is static files. |
+| 9 | No external requests | **Pass.** No request leaves the page's origin. With the network set offline after the first load, paging through all 7 slides showed every image (no placeholders). |
+| 10 | Safe rendering | **Pass.** `<b>Bold?</b><img src=x onerror=alert(1)>` and `<i>label</i>` show as plain text, create no elements and open no dialog. Links are http(s) only. A `../` asset path fails the build with "must stay inside the storyboard folder". |
+| 11 | Hosting | **Open** until the first deploy with this app. |
+| 12 | Accessibility | **Pass.** No unlabelled buttons, every image has alt text, the live region announces "Slide n of N: caption", and motion stops under reduced-motion. A screen-reader listening pass was not done. |
