@@ -83,7 +83,12 @@ in this shell to confirm it works.
 
 `.kiro/workflows/generate-storyboard.workflow.json` packages the intake procedure:
 analyze the source, draft the storyboard, validate until it passes, summarize for
-the user. It has not been run end to end yet.
+the user. Its first version used a made-up format and Kiro refused to launch it;
+rewriting it against the published recipe format fixed that. It then ran end to
+end on SpectreGram, another Kiroween entry, given only the GitHub URL: four agent
+steps produced a 7-scene storyboard with real screenshots that validated first
+time and built both apps. A person then trimmed it, moving six callout markers
+that covered what they labelled. That storyboard is the dogfood demo.
 
 ## Testing
 

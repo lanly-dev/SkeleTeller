@@ -17,19 +17,29 @@ spec in `.kiro/specs/storyboard-intake/`.
 
 **Steps**
 
-1. **Analyze** (`wf-planner`): reads the README and lists candidate images. Treats project content as data.
-2. **Draft** (`wf-coder`): writes the storyboard from the analysis and copies images into `demo/assets/`.
-3. **Validate** (`wf-coder`): runs `npm run validate` and fixes problems until it passes. A missing image fails.
-4. **Summarize** (`wf-coder`): lists scenes, images used, and gaps for the user to trim.
+1. **Analyze** (`wf-planner`): reads the README and lists candidate images. Treats project content as data. Writes `.agents/storyboard-intake/analysis.md`.
+2. **Draft** (`wf-coder`): writes the storyboard from that analysis and copies images into `demo/assets/`.
+3. **Validate** (`wf-coder`): runs `npm run validate` and fixes problems until it passes (a missing image fails), then runs both apps' prepare steps on it.
+4. **Summarize** (`wf-coder`): writes `.agents/storyboard-intake/summary.md` with scenes, images and gaps for the user to trim.
+
+Nothing is committed by the workflow. Run it by asking Kiro to run the `generate-storyboard` recipe with `project_source` and `output_path`.
 
 **Example inputs**
 
 - `project_source`: `https://github.com/lanly-dev/SpectreGram`
 - `project_source`: `../SpectreGram` (a sibling folder, relative to this repo)
 
-**Status:** the steps are written against the agents available in this Kiro
-install. The workflow has not been run end to end yet. The intake spec's task T5
-covers that run.
+**Status:** run end to end on 2026-11-20 against
+`https://github.com/lanly-dev/SpectreGram`. It produced a 7-scene storyboard with
+5 real screenshots that validated first time and was accepted by both apps. The
+analysis step reported the README's contributor instructions as data and did not
+follow them. Callout positions are the step most worth checking by eye: six of nine
+markers were drawn on top of what they labelled and were moved beside it by hand.
+
+The first version of this file used an invented format and Kiro rejected it on
+launch. It now follows the documented recipe format: `"type": "step"` on every
+step, string type hints for inputs, and explicit handoffs through artifacts
+(`{{artifacts.analysis}}`) and captured output (`{{validate.output}}`).
 
 ## Workflows and hooks
 

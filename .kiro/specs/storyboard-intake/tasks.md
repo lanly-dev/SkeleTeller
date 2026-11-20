@@ -42,3 +42,4 @@
 ## Status
 
 - **2026-11-19:** T0 to T4 done (`demo/` folder, `project/` ignored, workflow and steering updated, skeleton README rewritten, missing assets fail validation). T5, the end-to-end run against a real project, is still open.
+- **2026-11-20:** T5 done for the URL form. The workflow ran against https://github.com/lanly-dev/SpectreGram and wrote `demo/storyboard.yml` with 7 scenes and 5 screenshots; it validated first time, both apps accepted it, and no absolute paths were written. The README's contributor instructions were reported as data, not followed. Hand trim: six of nine callout markers covered their targets and were moved beside them. The local-path form and the no-images case were not run.
