@@ -74,7 +74,11 @@ function layoutWorld(storyboard): Area[];
 
 - Station kind: title is `sign`, feature and callout are `screen`, code is
   `terminal`, outro is `exit`.
-- Station position is fixed per kind at the center of the area. No layout hints
+- Station position is fixed: centered horizontally, 60 pixels above the line
+  between the doorways. A character walking straight from door to door passes in
+  front of the station and comes within prompt range, instead of walking through
+  it. (Changed 2026-11-20 after the first render showed the character drawn on top
+  of a centered station.) No layout hints
   are read from the storyboard, so the layout is deterministic and the same
   storyboard always gives the same world.
 - Walkable bounds are a rectangle inset from the area edges. Doorways are gaps at
