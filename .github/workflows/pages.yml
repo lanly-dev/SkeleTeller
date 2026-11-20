@@ -1,0 +1,79 @@
+name: Deploy apps to GitHub Pages
+
+# Builds SkeleTeller Quest (and, once it exists, SkeleTeller Storybook) from one
+# storyboard and publishes them side by side:
+#   /           landing page
+#   /quest/     the demo game
+# The storyboard is demo/storyboard.yml when the repo has one, otherwise the
+# skeleton sample, so the site always shows a working demo.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Test
+        run: npm test
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Pick the storyboard
+        id: storyboard
+        run: |
+          if [ -f demo/storyboard.yml ]; then
+            echo "script=build" >> "$GITHUB_OUTPUT"
+            echo "Using demo/storyboard.yml"
+          else
+            echo "script=build:sample" >> "$GITHUB_OUTPUT"
+            echo "No demo/storyboard.yml yet, using the skeleton sample"
+          fi
+
+      - name: Build SkeleTeller Quest
+        run: npm run ${{ steps.storyboard.outputs.script }} -w apps/demo-game
+
+      - name: Assemble the site
+        run: |
+          mkdir -p _site
+          cp .github/pages/index.html _site/index.html
+          cp -r apps/demo-game/dist _site/quest
+          touch _site/.nojekyll
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
