@@ -26,7 +26,7 @@ function assetPaths(sb: Storyboard): string[] {
 
 /**
  * Load and validate a storyboard with the shared loader, write it as JSON and copy its assets.
- * Nothing is written when validation fails. Never throws for bad storyboard input.
+ * Nothing is written when validation fails, and files copied by a run that fails midway are removed. Never throws for bad storyboard input.
  */
 export function prepareStoryboard(opts: PrepareOptions): PrepareResult {
   const result = loadStoryboard(opts.storyboard);
@@ -34,15 +34,19 @@ export function prepareStoryboard(opts: PrepareOptions): PrepareResult {
 
   const baseDir = path.dirname(path.resolve(opts.storyboard));
   const outAssets = path.resolve(opts.outAssets);
+  const copied: string[] = [];
   try {
     for (const asset of assetPaths(result.storyboard)) {
       const target = path.resolve(outAssets, asset);
       fs.mkdirSync(path.dirname(target), { recursive: true });
       fs.copyFileSync(path.resolve(baseDir, asset), target);
+      copied.push(target);
     }
     fs.mkdirSync(path.dirname(path.resolve(opts.outJson)), { recursive: true });
     fs.writeFileSync(opts.outJson, JSON.stringify(result.storyboard, null, 2) + '\n');
   } catch (e) {
+    // Remove what this run copied so a failure leaves no half-filled output.
+    for (const file of copied) fs.rmSync(file, { force: true });
     const reason = e instanceof Error ? e.message : 'unknown error';
     return { ok: false, errors: [{ path: '', message: `cannot write prepared output: ${reason}` }] };
   }

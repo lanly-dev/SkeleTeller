@@ -65,6 +65,26 @@ describe('prepareStoryboard', () => {
     if (!result.ok) expect(result.errors[0].message).toContain('inside the storyboard folder');
   });
 
+  it('removes copied assets and writes no JSON when a copy fails midway', () => {
+    const dir = path.join(tmp, 'project');
+    fs.mkdirSync(path.join(dir, 'assets'), { recursive: true });
+    fs.writeFileSync(path.join(dir, 'assets/a.png'), 'a');
+    fs.writeFileSync(path.join(dir, 'assets/b.png'), 'b');
+    const file = path.join(dir, 'sb.yml');
+    fs.writeFileSync(
+      file,
+      'version: "1.0"\nproject: { name: X, description: Y }\nscenes:\n  - { type: feature, visual: assets/a.png, caption: A }\n  - { type: feature, visual: assets/b.png, caption: B }\n',
+    );
+    const o = opts(file);
+    // A directory where the second asset should land makes its copy fail.
+    fs.mkdirSync(path.join(o.outAssets, 'assets/b.png'), { recursive: true });
+    const result = prepareStoryboard(o);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.errors[0].message).toContain('cannot write prepared output');
+    expect(fs.existsSync(path.join(o.outAssets, 'assets/a.png'))).toBe(false);
+    expect(fs.existsSync(o.outJson)).toBe(false);
+  });
+
   it('returns issues for a missing storyboard file', () => {
     const result = prepareStoryboard(opts(path.join(tmp, 'absent.yml')));
     expect(result.ok).toBe(false);

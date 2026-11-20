@@ -6,12 +6,22 @@ import { prepareStoryboard } from '../../../skeleton/src/prepare';
 const appDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const repoRoot = path.resolve(appDir, '../..');
 const DEFAULT_STORYBOARD = path.join(repoRoot, 'demo/storyboard.yml');
-const SAMPLE_STORYBOARD = path.join(repoRoot, 'skeleton/examples/sample-project.yml');
 
-/** Explicit argument, else demo/storyboard.yml, else the sample when the demo folder has not been written yet. */
+/** Explicit argument (relative to the current folder), else demo/storyboard.yml. No fallback. */
 function pickStoryboard(arg: string | undefined): string {
   if (arg) return path.resolve(arg);
-  return fs.existsSync(DEFAULT_STORYBOARD) ? DEFAULT_STORYBOARD : SAMPLE_STORYBOARD;
+  if (!fs.existsSync(DEFAULT_STORYBOARD)) {
+    console.error(`No storyboard found at ${path.relative(repoRoot, DEFAULT_STORYBOARD)}. Pass a storyboard path as the first argument.`);
+    process.exit(1);
+  }
+  return DEFAULT_STORYBOARD;
+}
+
+// npm runs a workspace's `prepare` script during `npm install` and `npm ci`. Do nothing then,
+// since a storyboard is only needed for dev and build, which run this script explicitly.
+if (['install', 'ci'].includes(process.env.npm_command ?? '')) {
+  console.log('Skipping demo-game prepare during npm install.');
+  process.exit(0);
 }
 
 const storyboard = pickStoryboard(process.argv[2]);
