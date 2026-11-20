@@ -37,6 +37,8 @@ apps/demo-game/dist/
 apps/demo-game/src/generated/
 apps/demo-game/public/
 apps/slide-walkthrough/dist/
+apps/slide-walkthrough/src/generated/
+apps/slide-walkthrough/public/
 apps/slide-walkthrough/build/
 
 # Temporary files

@@ -1,9 +1,10 @@
 name: Deploy apps to GitHub Pages
 
-# Builds SkeleTeller Quest (and, once it exists, SkeleTeller Storybook) from one
+# Builds SkeleTeller Quest and SkeleTeller Storybook from the same
 # storyboard and publishes them side by side:
-#   /           landing page
-#   /quest/     the demo game
+#   /            landing page
+#   /quest/      the demo game
+#   /storybook/  the slide walkthrough
 # The storyboard is demo/storyboard.yml when the repo has one, otherwise the
 # skeleton sample, so the site always shows a working demo.
 
@@ -55,11 +56,15 @@ jobs:
       - name: Build SkeleTeller Quest
         run: npm run ${{ steps.storyboard.outputs.script }} -w apps/demo-game
 
+      - name: Build SkeleTeller Storybook
+        run: npm run ${{ steps.storyboard.outputs.script }} -w apps/slide-walkthrough
+
       - name: Assemble the site
         run: |
           mkdir -p _site
           cp .github/pages/index.html _site/index.html
           cp -r apps/demo-game/dist _site/quest
+          cp -r apps/slide-walkthrough/dist _site/storybook
           touch _site/.nojekyll
 
       - uses: actions/configure-pages@v5
