@@ -16,7 +16,7 @@ SkeleTeller tells a project's story from its bones — the storyboard. Write one
 - **SkeleTeller Quest:** https://lanly-dev.github.io/SkeleTeller/quest/
 - **SkeleTeller Storybook:** https://lanly-dev.github.io/SkeleTeller/storybook/
 
-Both are built from the same sample storyboard, `skeleton/examples/sample-project.yml`.
+Both are built from the same storyboard, `demo/storyboard.yml`: a demo of [SpectreGram](https://github.com/lanly-dev/SpectreGram), another Kiroween 2026 entry, drafted from its GitHub URL by the `generate-storyboard` workflow and trimmed by hand.
 
 ## What is This?
 

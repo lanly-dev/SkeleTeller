@@ -5,7 +5,7 @@ style slide walkthrough: one slide per scene, paged at the reader's own pace, wi
 numbered hotspots that reveal explanations. It shows the project's images and
 story. It does not embed or run the project itself.
 
-**Read it:** https://lanly-dev.github.io/SkeleTeller/storybook/ (built from the sample storyboard).
+**Read it:** https://lanly-dev.github.io/SkeleTeller/storybook/ (built from `demo/storyboard.yml`, currently a demo of SpectreGram).
 
 The spec is in `.kiro/specs/slide-walkthrough/` (requirements, design, tasks).
 
