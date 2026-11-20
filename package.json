@@ -1,0 +1,21 @@
+{
+  "name": "skeleteller",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "workspaces": [
+    "skeleton",
+    "apps/*"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "validate": "tsx skeleton/src/cli.ts"
+  },
+  "devDependencies": {
+    "@types/node": "22.15.0",
+    "tsx": "4.20.3",
+    "typescript": "5.8.3",
+    "vitest": "3.2.4"
+  }
+}
