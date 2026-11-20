@@ -89,3 +89,5 @@ hosting.
 
 - **2026-11-20, Kiro IDE:** T10 done. `skeleton/examples/sample-spooky.yml` is the sample with only its theme changed (spooky mood, ghost avatar, other props and palette). `reskin.test.ts` checks that both validate, lay out identical areas and resolve to a different value in every themed field. Screenshots of both builds show visibly different worlds with no code edited.
 - **2026-11-20, Kiro IDE:** T11 written. `.github/workflows/pages.yml` installs, tests, typechecks, builds the game from `demo/storyboard.yml` (or the sample when there is none yet), and publishes the landing page at `/` and the game at `/quest/`. The same steps were run locally, including a clean `npm ci`, and the assembled site served from a subpath loaded every file with status 200. Not done until the first deploy succeeds on GitHub.
+
+- **2026-11-20, Kiro IDE:** T12 README written. Acceptance run recorded at the end of `requirements.md`: 8 of 11 pass in full, 4 passes in emulation pending a real phone, 9 (hosting) waits on enabling Pages, and 11 is missing Firefox and Safari.

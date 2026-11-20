@@ -96,3 +96,21 @@ scene's capture, caption and narration.
 - No audio.
 - No embedding or running of the demoed project.
 - No level editor and no layout hints in the storyboard.
+
+## Acceptance record
+
+Run on 2026-11-20 in the Kiro IDE. Browser checks used headless Edge (Chromium) driven over the DevTools protocol against `vite preview`. The fixtures for 1, 3, 5, 6, 7 and 10 were a separate 4-scene storyboard with its scenes reordered, no theme block and HTML markup in a caption, built into the game, with one copied image deleted afterwards.
+
+| # | Requirement | Result |
+|---|---|---|
+| 1 | Scene-to-area mapping | **Pass.** The sample gives 7 areas in scene order (tests and the keyboard tour). The reordered 4-scene storyboard gave 4 areas in its own order after a rebuild. |
+| 2 | Movement and navigation | **Pass.** Walls clamp except at doorways (tests); the tour walked right through every door and back left through one. No gating or fail state. |
+| 3 | Interaction | **Pass.** Every non-title station opened its panel with caption, image and narration; holding a move key for 3 s with a panel open did not move the character; Escape and Close both close. |
+| 4 | Controls | **Pass in emulation.** Keyboard: arrows, WASD, E, Space and Escape. Touch at 844 by 390 and 390 by 844: pad, View button, station tap and Close. **Open:** one check on a real phone. |
+| 5 | Progress display | **Pass.** The count read 1 / 7 for the sample and 1 / 4 for the 4-scene storyboard. |
+| 6 | Theme from storyboard data | **Pass.** `sample-project.yml` and `sample-spooky.yml` render visibly different worlds with no code change (screenshots, `reskin.test.ts`). A storyboard with no theme block plays with the default. |
+| 7 | Captures and assets | **Pass.** A missing capture fails the build with "scene 2, visual: … file not found". A capture deleted from the build shows "The image for scene 3 could not be loaded." and the game continues. |
+| 8 | Build and run | **Pass.** `build` reads `demo/storyboard.yml` and fails clearly when it is absent; `build:sample` and `dev:sample` work; the static output loads from a subpath with every file at status 200. |
+| 9 | Hosting | **Open.** The Pages workflow passes install, test, typecheck and build, then stops because Pages is not enabled on the repository yet. |
+| 10 | Safe rendering | **Pass.** A caption of `<b>Bold?</b><img src=x onerror=alert(1)>` and a callout label with `<i>` show as plain text, create no elements and open no dialog. A path with `../` that leaves the storyboard folder fails the build. Links are http(s) only (tests). |
+| 11 | Performance and compatibility | **Partly verified.** About 60 frames per second (121 frames in 2 s, headless Edge). The canvas keeps 16:9 at 1280 by 760 and 900 by 900. **Open:** Firefox and Safari were not tested. |
