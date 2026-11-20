@@ -42,5 +42,8 @@ apps/slide-walkthrough/build/
 *.temp
 .cache/
 
+# Local agent working output (review reports, task notes)
+.agents/
+
 # DO NOT IGNORE .kiro/ — required for Kiroween compliance
 # .kiro/  ← NEVER UNCOMMENT THIS
