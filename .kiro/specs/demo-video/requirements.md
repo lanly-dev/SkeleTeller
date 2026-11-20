@@ -1,3 +1,5 @@
+> **SUPERSEDED 2026-11-18.** App A changed from a rendered demo video to a playable demo game (see `AGENTS.md` Status). Do not implement this document. Replacement: `.kiro/specs/demo-game/`. Kept for history only.
+
 # Demo Video Renderer — Requirements (spec-first)
 
 > Spec status: **Requirements** — `design.md` and `tasks.md` follow in the spec
