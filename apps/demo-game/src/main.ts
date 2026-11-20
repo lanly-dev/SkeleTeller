@@ -1,15 +1,13 @@
 import './style.css';
-import type { Storyboard } from '../../../skeleton/src/types';
-import data from './generated/storyboard.json';
 import { drawFrame } from './draw';
 import { initialState, step, type GameState } from './game';
 import { createInput } from './input';
 import { createPanel } from './panel';
 import { resolveTheme } from './theme';
 import { createTouchControls } from './touch';
+import { storyboard } from './storyboard';
 import { layoutWorld, WORLD_HEIGHT, WORLD_WIDTH } from './world';
 
-const storyboard = data as unknown as Storyboard;
 const world = layoutWorld(storyboard);
 const theme = resolveTheme(storyboard.theme);
 
