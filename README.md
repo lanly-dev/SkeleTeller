@@ -11,6 +11,13 @@ SkeleTeller tells a project's story from its bones — the storyboard. Write one
 1. **SkeleTeller Quest** — A playable 2D walk-around game themed on your project: a character runs around its world, and each area conveys a feature
 2. **SkeleTeller Storybook** — An interactive, storybook-style slide walkthrough you page through yourself
 
+## Try it
+
+- **SkeleTeller Quest:** https://lanly-dev.github.io/SkeleTeller/quest/
+- **SkeleTeller Storybook:** coming next
+
+Both are built from the same sample storyboard, `skeleton/examples/sample-project.yml`.
+
 ## What is This?
 
 SkeleTeller is a skeleton (boilerplate) for producing software demos programmatically. The core idea:

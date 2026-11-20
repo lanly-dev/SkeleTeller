@@ -4,6 +4,8 @@ App A of SkeleTeller. It turns a storyboard into a small browser game: one
 character walks through a chain of areas themed on your project, and each area
 shows one scene. Walking the game is touring the project.
 
+**Play it:** https://lanly-dev.github.io/SkeleTeller/quest/ (built from the sample storyboard).
+
 The spec is in `.kiro/specs/demo-game/` (requirements, design, tasks).
 
 ## Run it
