@@ -1,0 +1,20 @@
+{
+  "name": "@skeleteller/demo-game",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "prepare": "tsx scripts/prepare.ts",
+    "dev": "npm run prepare -- ../../skeleton/examples/sample-project.yml && vite",
+    "build": "npm run prepare -- ../../skeleton/examples/sample-project.yml && tsc --noEmit && vite build",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "4.0.9",
+    "js-yaml": "4.1.0",
+    "tsx": "4.20.3",
+    "typescript": "5.8.3",
+    "vite": "7.3.8",
+    "vitest": "3.2.4"
+  }
+}
