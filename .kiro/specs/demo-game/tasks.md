@@ -1,0 +1,78 @@
+# SkeleTeller Quest (Demo Game) — Tasks
+
+> Tasks map to the file structure in `design.md`. Depends on the schema spec for
+> the shared validator, the theme block and the callout coordinate frame. Lean by
+> intent: one engine, no extras. Do not start T1 before the schema spec is merged.
+
+## T0 — Scaffold
+- `apps/demo-game/` with `package.json` (pinned exact versions: vite, typescript,
+  vitest), `tsconfig.json` (strict), `vite.config.ts` (relative base),
+  `vitest.config.ts`, `index.html`, `src/style.css`.
+- Scripts: `prepare`, `dev` (prepare then vite), `build` (prepare then tsc
+  --noEmit then vite build), `test`.
+- Add `apps/demo-game/dist/` and `src/generated/` to `.gitignore`.
+- **Done:** `npm run dev` shows a blank canvas page and `npm run build` is green.
+
+## T1 — `scripts/prepare.ts`
+- Read storyboard path (default `demo/storyboard.yml`), validate with the shared
+  validator, enforce asset containment, write generated JSON, copy assets.
+- **Done:** the sample storyboard prepares cleanly. A missing asset and an
+  escaping path each fail with a clear message and non-zero exit.
+
+## T2 — `src/theme.ts` and `src/theme.test.ts`
+- `DEFAULT_THEME`, `resolveTheme` with per-field fallback.
+- **Done:** tests for missing theme, invalid field and valid field pass.
+
+## T3 — `src/world.ts` and `src/world.test.ts`
+- `Area`, `layoutWorld` per design. Walkable bounds and doorway geometry exported.
+- **Done:** tests for sample length, station kinds, door flags and reorder pass.
+
+## T4 — `src/input.ts`
+- Keyboard and touch to one input state (direction, action edge, close edge).
+- **Done:** both devices drive the same state. No listeners leak on re-init.
+
+## T5 — `src/game.ts` and `src/game.test.ts`
+- `step` with movement, clamping, doorway crossing, nearest station, panel lock.
+- **Done:** tests for collision, doorway, prompt range and panel lock pass.
+
+## T6 — `src/draw.ts`
+- Draw ground, border, doorways, station kinds, props, avatars, prompt, HUD from
+  the resolved theme. Scale the canvas to fit while keeping aspect.
+- **Done:** the sample renders all five scene types with the default theme.
+
+## T7 — `src/panel.ts`
+- Panels for feature, callout (hotspots), code, outro. Text nodes only. Link scheme
+  check. Image failure placeholder.
+- **Done:** markup in a caption displays as text. Hotspots reveal labels.
+
+## T8 — `src/main.ts`
+- Boot from generated JSON, wire input, game, draw and panel, handle resize and
+  panel open and close.
+- **Done:** the keyboard tour of the sample completes start to exit.
+
+## T9 — Touch and responsive pass
+- Directional pad, action button, tap on stations and panel controls, phone-sized
+  layout.
+- **Done:** the touch-only tour of the sample completes on a phone-sized viewport.
+
+## T10 — Theme comparison
+- Add a second sample theme (in a test storyboard, not in app code) and confirm
+  the world looks different with no code change.
+- **Done:** two themes render visibly different worlds.
+
+## T11 — Hosting
+- GitHub Actions workflow that builds and publishes the game (and later the
+  slides) to GitHub Pages.
+- **Done:** the public URL loads and the sample tour completes.
+
+## T12 — README and acceptance
+- `apps/demo-game/README.md`: install, build, dev, how the storyboard maps to
+  areas, controls.
+- Run the acceptance list from `requirements.md` against the sample and record the
+  result as a dated note.
+- **Done:** every acceptance line passes or is listed with a reason.
+
+---
+
+**Review gate:** after T9 the game is playable. T10 to T12 prove versatility and
+hosting.
