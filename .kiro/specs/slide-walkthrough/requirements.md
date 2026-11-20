@@ -113,5 +113,5 @@ Run on 2026-11-20 in the Kiro IDE, against `vite preview` with headless Edge (Ch
 | 8 | Build and run | **Pass.** A missing image fails with "scene 2, visual: … file not found"; `build`, `build:sample` and `dev:sample` work; the output is static files. |
 | 9 | No external requests | **Pass.** No request leaves the page's origin. With the network set offline after the first load, paging through all 7 slides showed every image (no placeholders). |
 | 10 | Safe rendering | **Pass.** `<b>Bold?</b><img src=x onerror=alert(1)>` and `<i>label</i>` show as plain text, create no elements and open no dialog. Links are http(s) only. A `../` asset path fails the build with "must stay inside the storyboard folder". |
-| 11 | Hosting | **Open** until the first deploy with this app. |
+| 11 | Hosting | **Pass.** Run 44810671438 (commit `6363af1`) deployed both apps. The full check above passed again at https://lanly-dev.github.io/SkeleTeller/storybook/, including offline paging and no external requests. |
 | 12 | Accessibility | **Pass.** No unlabelled buttons, every image has alt text, the live region announces "Slide n of N: caption", and motion stops under reduced-motion. A screen-reader listening pass was not done. |

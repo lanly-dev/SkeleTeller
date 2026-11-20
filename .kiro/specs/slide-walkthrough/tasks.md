@@ -58,3 +58,4 @@
 ## Status
 
 - **2026-11-20, Kiro IDE:** T0 and T2 to T10 done; T1 (shared prepare) came with the Kiro Web batch for the game. 21 new tests (slides, router, theme). The Pages workflow builds both apps and publishes the Storybook at `/storybook/`. Layout fixes found by screenshots: the stacked phone layout left a large gap, and an off-screen live region made the window scroll. Acceptance recorded in `requirements.md`: 10 of 12 pass, 3 passes in emulation pending a real phone, and 11 (hosting) waits for the deploy.
+- **2026-11-20:** deployed; the live check passed. Requirement 11 now passes: 11 of 12 in full. Still open: a real phone (3).
