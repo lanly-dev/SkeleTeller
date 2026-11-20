@@ -1,0 +1,21 @@
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #111;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#game {
+  /* Logical size is 960 by 540. Scale to fit the window, keeping the aspect ratio. */
+  width: min(100vw, calc(100vh * 960 / 540));
+  height: auto;
+  aspect-ratio: 960 / 540;
+  image-rendering: pixelated;
+  background: #000;
+}
