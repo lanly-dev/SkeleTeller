@@ -6,12 +6,12 @@ import { initialState, step, type GameState } from './game';
 import { createInput } from './input';
 import { createPanel } from './panel';
 import { resolveTheme } from './theme';
+import { createTouchControls } from './touch';
 import { layoutWorld, WORLD_HEIGHT, WORLD_WIDTH } from './world';
 
 const storyboard = data as unknown as Storyboard;
 const world = layoutWorld(storyboard);
 const theme = resolveTheme(storyboard.theme);
-const coarse = window.matchMedia('(pointer: coarse)').matches;
 
 const canvas = document.getElementById('game') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
@@ -54,6 +54,10 @@ const panel = createPanel({
   onRequestClose: () => input.pressClose(),
 });
 
+const touch = createTouchControls(document.getElementById('touch') as HTMLElement, input);
+/** True once the device has a coarse pointer or has been touched. Switches prompt and hint wording. */
+const isTouch = () => document.body.classList.contains('has-touch');
+
 /** Convert a pointer position to logical world coordinates. */
 function toWorld(e: PointerEvent): { x: number; y: number } {
   const rect = canvas.getBoundingClientRect();
@@ -80,8 +84,6 @@ function announce(index: number) {
 }
 announce(0);
 
-const prompt = coarse ? 'Tap to view' : 'Press E to view';
-const hint = coarse ? 'Walk with the pad. Doors are on the right.' : 'Walk with arrow keys or WASD. Doors are on the right.';
 
 let last = performance.now();
 const start = last;
@@ -92,8 +94,15 @@ function frame(now: number) {
   state = step(state, input.read(), dt, world);
 
   if (state.area !== prev.area) announce(state.area);
-  if (state.panelOpen && !panel.isOpen) panel.open(world[state.area].sceneRef);
-  if (!state.panelOpen && panel.isOpen) panel.close();
+  if (state.panelOpen && !panel.isOpen) {
+    panel.open(world[state.area].sceneRef);
+    touch.setVisible(false);
+  }
+  if (!state.panelOpen && panel.isOpen) {
+    panel.close();
+    touch.setVisible(true);
+  }
+  const touchMode = isTouch();
 
   drawFrame(ctx, {
     storyboard,
@@ -103,8 +112,8 @@ function frame(now: number) {
     images,
     time: (now - start) / 1000,
     moving: state.x !== prev.x || state.y !== prev.y,
-    prompt,
-    hint,
+    prompt: touchMode ? 'Tap View or the station' : 'Press E to view',
+    hint: touchMode ? 'Walk with the pad. Doors are on the right.' : 'Walk with arrow keys or WASD. Doors are on the right.',
   });
   requestAnimationFrame(frame);
 }

@@ -79,6 +79,8 @@ function calloutFigure(src: string, alt: string, callouts: Callout[], sceneNumbe
       } else {
         button.setAttribute('aria-expanded', 'true');
         label.textContent = `${i + 1}. ${c.label}`;
+        // On short screens the label can sit below the fold of the panel.
+        label.scrollIntoView?.({ block: 'nearest' });
       }
     });
     buttons.push(button);
