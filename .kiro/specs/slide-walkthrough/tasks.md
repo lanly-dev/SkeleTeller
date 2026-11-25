@@ -55,6 +55,30 @@
 - Run the acceptance list in `requirements.md` and record the result as a dated note.
 - **Done:** every acceptance line passes or is listed with a reason.
 
+## T11 — Storybook art module
+- `src/art.ts` per the design: four mood backdrops, three avatars, six props, cover,
+  page and end compositions. `src/art.test.ts`: deterministic output, every enum
+  value renders, unknown values fall back, and no storyboard text in the markup.
+- **Done:** tests pass.
+
+## T12 — Spread layout, cover and end pages
+- Rewrite `render.ts` for cover, spread and end pages; chapter numbers from
+  `slides.ts` (with a test); narration as page text; paper text page; phone stack.
+- **Done:** every sample slide renders, hotspots stay on target at three widths.
+
+## T13 — Page turns
+- Direction-aware turn animation, reduced motion respected.
+- **Done:** every paging control still works.
+
+## T14 — Story voice
+- Update `.kiro/steering/storyboard-drafting.md`; rewrite the SpectreGram narration.
+- **Done:** `npm run validate` passes on `demo/storyboard.yml`.
+
+## T15 — Acceptance for 13 to 17
+- Screenshots of all four moods and three avatars, rerun the earlier acceptance
+  checks, record results.
+- **Done:** recorded in `requirements.md`.
+
 ## Status
 
 - **2026-11-20, Kiro IDE:** T0 and T2 to T10 done; T1 (shared prepare) came with the Kiro Web batch for the game. 21 new tests (slides, router, theme). The Pages workflow builds both apps and publishes the Storybook at `/storybook/`. Layout fixes found by screenshots: the stacked phone layout left a large gap, and an off-screen live region made the window scroll. Acceptance recorded in `requirements.md`: 10 of 12 pass, 3 passes in emulation pending a real phone, and 11 (hosting) waits for the deploy.

@@ -119,6 +119,56 @@ corner radius and border style.
 
 A short cross-fade between slides, disabled under `prefers-reduced-motion`.
 
+## Storybook art (added 2026-11-21)
+
+### Art module (`art.ts`, pure)
+Returns SVG markup strings. Functions: `resolveArt(theme)` (mood, avatar and props
+with the same defaults as the game), `backdrop(mood, w, h, id)`, `avatar(kind)`,
+`prop(kind)`, `coverArt(art, id)`, `pageArt(art, slideIndex, id)` and
+`endArt(art, id)`. Shapes are hand-drawn paths with fixed coordinates, so output is
+deterministic. Which props stand on a page rotates with the slide index, so pages
+differ while the book stays the same between builds.
+
+Colors are never written into the markup. Shapes use classes (`c-bg`, `c-ground`,
+`c-accent`, `c-station`, `c-text` and `s-*` for strokes) and gradient stops use
+`stop-color: var(--...)`, so the theme's CSS variables color the art. Every
+gradient, mask and clip id gets a caller-supplied prefix so several drawings can
+share a document.
+
+Because the markup is built only from constants, numbers and validated enum values,
+the renderer may insert it with a `<template>`. A test checks that art produced for
+a storyboard full of markup contains none of that storyboard's text.
+
+### Moods
+- `spooky`: night sky, crescent moon, bats, bare tree, fog, cobwebs.
+- `cozy`: warm dusk, low sun, rolling hills, a cottage with a lit window, falling leaves.
+- `neon`: dark sky, striped sun, perspective grid floor, skyline silhouettes.
+- `clean`: calm sky, soft clouds, smooth hills, a few birds.
+
+### Layout
+- **Cover** (title scene): one wide illustration with HTML overlay for the title,
+  tagline and an imprint line. Bunting is drawn when `banner` is among the props.
+- **Spread** (feature, callout, code): left page is the backdrop SVG, an HTML frame
+  holding the screenshot with its hotspots (or the code block), and a ground SVG with
+  the avatar pointing at the frame and up to two props. Right page is paper colored,
+  with "Chapter n", the caption as an `h2`, the hotspot note for callouts, and the
+  narration with a CSS first-letter drop cap.
+- **End page** (outro): wide illustration with the avatar waving, and an HTML overlay
+  with "The End", the caption, the narration and the repository link.
+- Below 760 px the spread stacks: illustration, then text.
+
+### Page turns
+The new spread animates from the gutter: going forward, the left page swings in
+around its right edge; going back, the right page swings in around its left edge. A
+CSS 3D rotation of about 300 ms, disabled under `prefers-reduced-motion`. Narrow
+screens keep the existing slide-in.
+
+### Narration voice
+The drafting steering asks for narration written as a short storybook passage about
+the user and the project, still limited to what the project really does. The
+SpectreGram storyboard is rewritten in that voice; the sample keeps its plain voice,
+so both forms are covered.
+
 ## Error handling
 
 | Operation | Failure | Behavior |

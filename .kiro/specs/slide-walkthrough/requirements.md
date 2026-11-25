@@ -90,6 +90,48 @@ pace and clicks hotspots to reveal explanations.
 - **Acceptance:** A keyboard and screen-reader pass over the sample finds no
   unlabelled control.
 
+## Storybook presentation (added 2026-11-21)
+
+The walkthrough becomes an illustrated storybook. Requirements 13 to 17 add to the
+ones above; requirement 5 is amended by 15.
+
+## 13. Illustrated pages
+- **Requirement:** The title scene becomes an illustrated cover. Every feature,
+  callout and code scene gets an illustrated page. The outro becomes an illustrated
+  closing page. The art is drawn in code from the storyboard theme: the mood picks
+  the backdrop, the avatar is the same character as in the game, and the props and
+  palette dress the scene. No art files ship and no art is fetched.
+- **Acceptance:** Each of the four moods, three avatars and six props renders. The
+  same storyboard gives the same art on every build. Two storyboards that differ only
+  in theme give visibly different books.
+
+## 14. Story layout
+- **Requirement:** On wide screens each scene is a two-page spread: the
+  illustration with the scene's screenshot (or code) framed in it on the left, and
+  the story on the right. On narrow screens the two pages stack. Content scenes are
+  numbered as chapters, with the caption as the chapter title.
+- **Acceptance:** The sample's five content scenes read Chapter 1 to Chapter 5.
+  Hotspots stay on target inside the framed screenshot at any width.
+
+## 15. Narration as the page text
+- **Requirement:** Narration is shown as the story text of its page, opened with a
+  decorated first letter. This replaces the reveal control from requirement 5.
+- **Acceptance:** Every narration in the sample is visible on its page without any
+  extra click.
+
+## 16. Page turns
+- **Requirement:** Moving forward or back animates like turning a page. Under the
+  reduced-motion preference there is no animation.
+- **Acceptance:** Paging still works with every control in requirements 2 and 3.
+
+## 17. Art safety
+- **Requirement:** The art markup is built only from constants, numbers and theme
+  enum values; colors reach it through CSS variables. No storyboard text appears in
+  the art; titles and captions stay in HTML text nodes. The art is decorative and
+  hidden from screen readers.
+- **Acceptance:** A test renders the art for a storyboard full of markup and finds
+  none of its text in the art markup.
+
 ## Non-goals
 - No live embedding or simulation of the demoed project.
 - No video, audio or autoplay. The viewer sets the pace.
