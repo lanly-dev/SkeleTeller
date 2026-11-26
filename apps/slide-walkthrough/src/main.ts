@@ -1,4 +1,5 @@
 import './style.css';
+import { resolveArt } from './art';
 import { createControls } from './controls';
 import { renderSlide, type RenderedSlide } from './render';
 import { clampIndex, formatHash, parseHash } from './router';
@@ -7,6 +8,7 @@ import { storyboard } from './storyboard';
 import { themeVariables } from './theme';
 
 const slides = buildSlides(storyboard);
+const art = resolveArt(storyboard.theme);
 const total = slides.length;
 
 const stage = document.getElementById('stage') as HTMLElement;
@@ -40,12 +42,14 @@ let rendered: RenderedSlide | null = null;
 function show(index: number, opts: { push?: boolean; focus?: boolean } = {}) {
   const i = clampIndex(index, total);
   if (i === current) return;
+  const direction = current < 0 ? '' : i > current ? 'turn-forward' : 'turn-back';
   current = i;
   const slide = slides[i];
-  rendered = renderSlide(slide, total, './');
+  rendered = renderSlide(slide, total, './', art);
+  if (direction) rendered.element.classList.add(direction);
   stage.replaceChildren(rendered.element);
   counter.textContent = `${i + 1} / ${total}`;
-  live.textContent = `Slide ${i + 1} of ${total}: ${slide.heading}`;
+  live.textContent = `Page ${i + 1} of ${total}: ${slide.heading}`;
   controls.update(i);
   const hash = formatHash(i);
   if (opts.push && location.hash !== hash) history.pushState(null, '', hash);

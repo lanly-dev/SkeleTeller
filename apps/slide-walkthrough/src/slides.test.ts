@@ -22,6 +22,10 @@ describe('buildSlides', () => {
     expect(slides.map((s) => s.index)).toEqual([0, 1, 2, 3, 4, 5, 6]);
   });
 
+  it('numbers content scenes as chapters, skipping the cover and the end', () => {
+    expect(slides.map((s) => s.chapter)).toEqual([undefined, 1, 2, 3, 4, 5, undefined]);
+  });
+
   it('follows a reordered storyboard', () => {
     const reordered = { ...sample, scenes: [...sample.scenes].reverse() };
     expect(buildSlides(reordered).map((s) => s.kind)).toEqual([...sample.scenes].reverse().map((s) => s.type));

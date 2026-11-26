@@ -1,9 +1,14 @@
+import { coverArt, endArt, pageArt, type ArtTheme, type Drawing } from './art';
 import type { SlideModel } from './slides';
 
 /**
- * Builds the DOM for one slide. Storyboard text only ever goes in through textContent
- * or plain attribute values; nothing is parsed as HTML. Image sources are relative
- * paths the build already validated, and links come pre-checked from buildSlides.
+ * Builds the DOM for one page of the storybook.
+ *
+ * Storyboard text only ever goes in through textContent or plain attribute values;
+ * nothing from the storyboard is parsed as HTML. The only markup parsed is the art
+ * from art.ts, which is built from constants and theme enum values and is tested to
+ * carry no storyboard text. Image sources are relative paths the build validated,
+ * and links come pre-checked from buildSlides.
  */
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, text?: string): HTMLElementTagNameMap[K] {
@@ -11,6 +16,19 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, t
   if (className) node.className = className;
   if (text !== undefined) node.textContent = text;
   return node;
+}
+
+/** Parse art markup from art.ts. Never called with storyboard text. */
+function artNode(markup: string): Element {
+  const tpl = document.createElement('template');
+  tpl.innerHTML = markup;
+  return tpl.content.firstElementChild!;
+}
+
+function illustration(className: string, drawing: Drawing): HTMLElement {
+  const box = el('div', className);
+  box.append(artNode(drawing.backdrop), artNode(drawing.ground));
+  return box;
 }
 
 function image(src: string, alt: string, slideNumber: number): HTMLElement {
@@ -43,7 +61,7 @@ function hotspotFigure(slide: SlideModel, assetBase: string) {
   figure.append(image(assetBase + slide.image!.src, slide.image!.alt, slide.index + 1));
   const note = el('p', 'hotspot-note');
   note.setAttribute('aria-live', 'polite');
-  const idle = 'Select a numbered point to learn more.';
+  const idle = 'Select a numbered point in the picture to learn more.';
   note.textContent = idle;
   const buttons: HTMLButtonElement[] = [];
 
@@ -91,74 +109,82 @@ function codeBlock(code: NonNullable<SlideModel['code']>): HTMLElement {
 }
 
 function narration(text: string | undefined): HTMLElement | undefined {
-  if (!text) return undefined;
-  const d = el('details', 'narration');
-  d.append(el('summary', undefined, 'Read the narration'), el('p', undefined, text));
-  return d;
+  return text ? el('p', 'narration', text) : undefined;
 }
 
-export function renderSlide(slide: SlideModel, total: number, assetBase: string): RenderedSlide {
-  const section = el('section', `slide slide-${slide.kind}`);
-  section.setAttribute('aria-roledescription', 'slide');
-  section.setAttribute('aria-label', `Slide ${slide.index + 1} of ${total}`);
+function link(slide: SlideModel): HTMLElement | undefined {
+  if (!slide.link) return undefined;
+  const a = el('a', 'slide-link', slide.link.text);
+  a.href = slide.link.href;
+  a.target = '_blank';
+  a.rel = 'noopener noreferrer';
+  return a;
+}
+
+function heading(slide: SlideModel, level: 'h1' | 'h2'): HTMLElement {
+  const h = el(level, 'slide-heading', slide.heading);
+  h.id = 'slide-heading';
+  h.tabIndex = -1;
+  return h;
+}
+
+function cover(section: HTMLElement, slide: SlideModel, art: ArtTheme) {
+  section.append(illustration('cover-art', coverArt(art, `cover${slide.index}`)));
+  const plaque = el('div', 'cover-plaque');
+  plaque.append(heading(slide, 'h1'));
+  if (slide.subheading) plaque.append(el('p', 'cover-tagline', slide.subheading));
+  section.append(plaque, el('p', 'cover-imprint', 'A SkeleTeller Storybook'));
+}
+
+function ending(section: HTMLElement, slide: SlideModel, art: ArtTheme) {
+  section.append(illustration('cover-art', endArt(art, `end${slide.index}`)));
+  const card = el('div', 'end-card');
+  card.append(el('p', 'end-title', 'The End'), heading(slide, 'h2'));
+  const story = narration(slide.narration);
+  if (story) card.append(story);
+  const a = link(slide);
+  if (a) card.append(a);
+  section.append(card);
+}
+
+function spread(section: HTMLElement, slide: SlideModel, art: ArtTheme, assetBase: string): () => boolean {
+  let closeHotspot = () => false;
+  const left = illustration('page-art', pageArt(art, slide.index, `page${slide.index}`));
+  const frame = el('div', slide.kind === 'code' ? 'art-frame art-frame-code' : 'art-frame');
+  const text = el('div', 'page-text');
+  text.append(el('p', 'chapter', `Chapter ${slide.chapter ?? slide.index}`), heading(slide, 'h2'));
+
+  if (slide.kind === 'callout') {
+    const { figure, note, closeAll } = hotspotFigure(slide, assetBase);
+    closeHotspot = closeAll;
+    frame.append(figure);
+    text.append(note);
+  } else if (slide.kind === 'code') {
+    frame.append(codeBlock(slide.code!));
+  } else {
+    const figure = el('div', 'figure');
+    figure.append(image(assetBase + slide.image!.src, slide.image!.alt, slide.index + 1));
+    frame.append(figure);
+  }
+  left.append(frame);
+
+  const story = narration(slide.narration);
+  if (story) text.append(story);
+  text.append(el('p', 'page-number', String(slide.index + 1)));
+  section.append(left, text);
+  return closeHotspot;
+}
+
+export function renderSlide(slide: SlideModel, total: number, assetBase: string, art: ArtTheme): RenderedSlide {
+  const layout = slide.kind === 'title' ? 'cover' : slide.kind === 'outro' ? 'end' : 'spread';
+  const section = el('section', `slide slide-${slide.kind} slide-${layout}`);
+  section.setAttribute('aria-roledescription', 'page');
+  section.setAttribute('aria-label', `Page ${slide.index + 1} of ${total}`);
   let closeHotspot = () => false;
 
-  if (slide.background) {
-    const bg = el('div', 'slide-backdrop');
-    const img = el('img');
-    img.alt = '';
-    img.addEventListener('error', () => bg.remove(), { once: true });
-    img.src = assetBase + slide.background;
-    bg.append(img);
-    section.append(bg);
-  }
+  if (layout === 'cover') cover(section, slide, art);
+  else if (layout === 'end') ending(section, slide, art);
+  else closeHotspot = spread(section, slide, art, assetBase);
 
-  const body = el('div', 'slide-body');
-  const heading = el(slide.kind === 'title' ? 'h1' : 'h2', 'slide-heading', slide.heading);
-  heading.id = 'slide-heading';
-  heading.tabIndex = -1;
-
-  switch (slide.kind) {
-    case 'title':
-    case 'outro': {
-      body.append(heading);
-      if (slide.subheading) body.append(el('p', 'slide-sub', slide.subheading));
-      if (slide.link) {
-        const a = el('a', 'slide-link', slide.link.text);
-        a.href = slide.link.href;
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-        body.append(a);
-      }
-      break;
-    }
-    case 'feature': {
-      const media = el('div', 'slide-media');
-      media.append(el('div', 'figure'));
-      media.firstElementChild!.append(image(assetBase + slide.image!.src, slide.image!.alt, slide.index + 1));
-      const text = el('div', 'slide-text');
-      text.append(heading);
-      body.append(media, text);
-      break;
-    }
-    case 'callout': {
-      const { figure, note, closeAll } = hotspotFigure(slide, assetBase);
-      closeHotspot = closeAll;
-      const media = el('div', 'slide-media');
-      media.append(figure);
-      const text = el('div', 'slide-text');
-      text.append(heading, note);
-      body.append(media, text);
-      break;
-    }
-    case 'code': {
-      body.append(heading, codeBlock(slide.code!));
-      break;
-    }
-  }
-
-  const more = narration(slide.narration);
-  if (more) (body.querySelector('.slide-text') ?? body).append(more);
-  section.append(body);
   return { element: section, closeHotspot };
 }

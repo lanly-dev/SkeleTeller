@@ -60,6 +60,8 @@ export function themeVariables(raw: Theme | undefined | unknown): Record<string,
   return {
     '--bg': bg,
     '--surface': surface,
+    '--ground': surface,
+    '--station': hotspot,
     '--text': readable(surface, readable(bg, color(p.text, DEFAULT_PALETTE.text))),
     '--accent': accent,
     '--on-accent': readable(accent, '#111111'),

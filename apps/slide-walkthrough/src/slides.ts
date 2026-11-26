@@ -23,6 +23,8 @@ export interface CodeLine {
 export interface SlideModel {
   index: number;
   kind: SlideKind;
+  /** Chapter number for feature, callout and code scenes, counted from 1. The cover and the end have none. */
+  chapter?: number;
   heading: string;
   subheading?: string;
   /** Main image (feature and callout). */
@@ -57,8 +59,10 @@ function codeLines(snippet: string, highlight: number[] | undefined): CodeLine[]
 /** One slide per scene, in storyboard order. */
 export function buildSlides(storyboard: Storyboard): SlideModel[] {
   const projectLink = safeHttpUrl(storyboard.project.repository) ?? safeHttpUrl(storyboard.project.website);
+  let chapters = 0;
   return storyboard.scenes.map((scene, index): SlideModel => {
-    const base = { index, kind: scene.type, hotspots: [] as Hotspot[] };
+    const chapter = scene.type === 'title' || scene.type === 'outro' ? undefined : ++chapters;
+    const base = { index, kind: scene.type, chapter, hotspots: [] as Hotspot[] };
     switch (scene.type) {
       case 'title':
         return {
