@@ -132,6 +132,50 @@ ones above; requirement 5 is amended by 15.
 - **Acceptance:** A test renders the art for a storyboard full of markup and finds
   none of its text in the art markup.
 
+## Living pages (added 2026-11-21)
+
+Interactivity stays within the storybook scope cap in `AGENTS.md`: it adds feel to
+paging, pictures and hotspots, and never simulates the demoed project.
+
+## 18. Fuller scenes
+- **Requirement:** Like the areas of the game, each illustrated page shows several
+  objects: up to four of the theme's props (rotating by page), plus two scenery
+  objects that belong to the mood (spooky: pumpkin and gravestone; cozy: fence and
+  flowers; neon: palm and arcade cabinet; clean: round tree and bench).
+- **Acceptance:** Every sample page with art shows the avatar, at least two props
+  when the theme has them, and both mood objects.
+
+## 19. Touchable art
+- **Requirement:** Clicking or tapping the avatar or any object makes it react with
+  a short animation that fits it (the lamp flares, the banner flaps, the crate hops,
+  the plant sways, the sign swings, books wiggle, the avatar bounces). Pages also
+  have gentle idle motion: the avatar floats or breathes, stars twinkle, bats flap.
+  Under reduced motion there is no idle motion and reactions are a brief highlight.
+- **Acceptance:** Each object type reacts when clicked. The art carries no
+  information that is not also in the page text, so it can stay hidden from screen
+  readers.
+
+## 20. A guide character
+- **Requirement:** Tapping the avatar shows a short speech bubble with a hint for
+  that page (for example "Tap the numbered points!" on a callout page). Opening a
+  hotspot makes the avatar bounce toward it. Bubble text is fixed per page type, not
+  taken from the storyboard.
+- **Acceptance:** The bubble appears on each page type and closes on its own.
+
+## 21. Page corners
+- **Requirement:** Each spread shows a folded corner at the bottom of each page.
+  The right one turns forward and the left one turns back, like a real book. They
+  repeat the Back and Next buttons, which stay as the accessible controls.
+- **Acceptance:** The corners page the book in both directions; no corner shows
+  where there is no page to turn to.
+
+## 22. Read aloud
+- **Requirement:** When the browser offers speech synthesis, each page has a "Read
+  aloud" control that reads the page heading and story text. Changing page stops it.
+  Where the browser has none, the control does not appear. No speech service is
+  called over the network.
+- **Acceptance:** Pressing it starts speech of the current page; paging stops it.
+
 ## Non-goals
 - No live embedding or simulation of the demoed project.
 - No video, audio or autoplay. The viewer sets the pace.

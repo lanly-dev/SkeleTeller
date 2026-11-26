@@ -169,6 +169,43 @@ the user and the project, still limited to what the project really does. The
 SpectreGram storyboard is rewritten in that voice; the sample keeps its plain voice,
 so both forms are covered.
 
+## Living pages (added 2026-11-21)
+
+### Objects in the art
+Every avatar, prop and mood object is wrapped as
+`<g class="obj obj-KIND" data-obj="KIND">`, where KIND comes only from the enums and
+a fixed list of mood objects. An inner group carries the animation so the outer
+transform that places it is untouched. `pageArt` places the avatar and up to four
+props in fixed slots, rotating which props stand on each page by slide index, and
+adds the two mood objects. The cover and end page show all props and both mood
+objects.
+
+### Reactions and idle motion
+One delegated click listener on the slide looks for the nearest `[data-obj]`, adds
+`is-poked` to its inner group, and removes it on `animationend`. Each KIND has its
+own keyframes in CSS, using `transform-box: fill-box` so it pivots on itself.
+Idle motion is CSS animation on the avatar, stars and bats. The art SVG has
+`pointer-events: none` and only `.obj` groups take pointer events, so clicks on
+the framed screenshot and hotspots are never caught by the art. Under
+`prefers-reduced-motion` idle motion is off and `is-poked` only brightens the
+object for a moment.
+
+### Guide bubble
+A DOM element positioned over the avatar slot, filled with `textContent` from a
+fixed map keyed by page type. Shown on avatar tap for 2.6 s. Opening a hotspot
+pokes the avatar.
+
+### Page corners
+Two buttons per spread, styled as folded corners, at the outer bottom corners. They
+call the same handlers as Back and Next, are `tabindex=-1` and `aria-hidden`
+because Back and Next already cover them, and are hidden where there is no
+neighbouring page.
+
+### Read aloud
+`readAloud.ts`: present only when `window.speechSynthesis` exists. Speaks the
+heading and narration with one `SpeechSynthesisUtterance` in the page language;
+`cancel()` on page change. The control is a `button` with `aria-pressed`.
+
 ## Error handling
 
 | Operation | Failure | Behavior |

@@ -79,6 +79,24 @@
   checks, record results.
 - **Done:** recorded in `requirements.md`.
 
+## T16 — Fuller scenes and touchable objects
+- Wrap every object as `[data-obj]`, four props per page, two mood objects per mood.
+  Tests: every KIND appears, data-obj values come only from known names, four props
+  when the theme has four.
+- **Done:** tests pass; screenshots of all four moods.
+
+## T17 — Reactions, idle motion, guide bubble
+- Delegated click handler, per-object keyframes, idle motion, reduced-motion fallback,
+  bubble text map.
+- **Done:** each object reacts in the browser check; the bubble shows on every page type.
+
+## T18 — Page corners and read aloud
+- Folded-corner buttons; `readAloud.ts`.
+- **Done:** corners page both ways; read aloud starts and stops with paging.
+
+## T19 — Acceptance for 18 to 22
+- **Done:** results recorded in `requirements.md`.
+
 ## Status
 
 - **2026-11-20, Kiro IDE:** T0 and T2 to T10 done; T1 (shared prepare) came with the Kiro Web batch for the game. 21 new tests (slides, router, theme). The Pages workflow builds both apps and publishes the Storybook at `/storybook/`. Layout fixes found by screenshots: the stacked phone layout left a large gap, and an off-screen live region made the window scroll. Acceptance recorded in `requirements.md`: 10 of 12 pass, 3 passes in emulation pending a real phone, and 11 (hosting) waits for the deploy.
