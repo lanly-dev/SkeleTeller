@@ -240,10 +240,15 @@ function bunting(w: number, y: number, sag: number): string {
 type Pose = 'point' | 'wave';
 
 function ghost(p: string, pose: Pose): string {
-  const arm = pose === 'point' ? 'M44 10 C70 0 86 -20 96 -44' : 'M44 0 C64 -10 74 -40 68 -70';
+  // A soft, tapering arm made of the same sheet as the body. Its wide base is drawn
+  // first and tucked under the body, so it grows out of the ghost instead of sticking out.
+  const arm =
+    pose === 'point'
+      ? 'M30 -4 C60 -14 80 -30 92 -50 C97 -58 110 -54 106 -44 C96 -22 76 2 36 22 Z'
+      : 'M28 -12 C46 -26 54 -48 56 -68 C57 -80 72 -82 72 -70 C74 -42 66 -12 40 14 Z';
   return `<ellipse cx="0" cy="0" rx="52" ry="8" fill="#000" opacity="0.28" />
 <g transform="translate(0 -110)">
-<path d="${arm}" fill="none" stroke="#e6ecf3" stroke-width="14" stroke-linecap="round" />
+<path d="${arm}" fill="url(#${p}ghost)" />
 <path d="M-58 70 C-62 10 -48 -62 0 -66 C48 -62 62 10 58 70 Q48 58 38 72 Q28 86 18 70 Q8 56 -2 72 Q-12 88 -22 70 Q-32 56 -42 72 Q-50 82 -58 70 Z" fill="url(#${p}ghost)" />
 <ellipse cx="-18" cy="-14" rx="8" ry="11" fill="#1a2332" /><ellipse cx="18" cy="-14" rx="8" ry="11" fill="#1a2332" />
 <circle cx="-15" cy="-18" r="2.6" fill="#fff" /><circle cx="21" cy="-18" r="2.6" fill="#fff" />
