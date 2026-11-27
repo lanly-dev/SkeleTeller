@@ -88,6 +88,50 @@ scene's capture, caption and narration.
   Works in current Chrome, Firefox, Safari and Edge, and on a phone-sized viewport.
 - **Acceptance:** The canvas scales to the window while keeping aspect ratio.
 
+## Living world (added 2026-11-26)
+
+Everything here stays inside the scope cap in `AGENTS.md`: one character, walk and
+interact only. No combat, enemies, inventory, puzzles, physics, scores, second
+character, or level generation. Nothing simulates the demoed project.
+
+## 12. Fuller areas
+- **Requirement:** Besides the theme props, each area shows the two scenery objects
+  of its mood (spooky: pumpkin and gravestone; cozy: fence and flowers; neon: palm
+  and arcade cabinet; clean: tree and bench), and gentle ambient life (spooky: wisps
+  and bats; cozy: falling leaves and fireflies; neon: sparkles; clean: butterflies).
+  Objects and the character are drawn in depth order, so the character passes in
+  front of things below it and behind things above it.
+- **Acceptance:** Every area of the sample shows both mood objects and ambient life
+  for each of the four moods. Objects never cover the station or the doorways.
+
+## 13. A world that responds
+- **Requirement:** A prop or scenery object reacts with a short animation that fits
+  it when the character brushes past it, when the player presses the action key
+  next to it (away from a station), or when the player taps it. On an action press
+  or tap the character also says a short fixed line about the object. Objects do
+  not block movement.
+- **Acceptance:** Each object kind reacts in all three ways. The lines are fixed
+  text, not storyboard text.
+
+## 14. A livelier character
+- **Requirement:** The character swings its legs or bobs while walking, kicks up
+  small dust puffs, breathes or floats when idle, and hops when it opens a station.
+- **Acceptance:** Each avatar shows the walk and idle motion.
+
+## 15. Area and progress feedback
+- **Requirement:** Entering an area shows a short entry card with its number and
+  caption. Stations already opened show a check mark, and the heads-up display shows
+  how many stations have been seen out of the total. Reaching the exit area sets off
+  a short confetti burst. Nothing is locked, gated or scored.
+- **Acceptance:** The count rises as stations are opened, and the card and burst
+  appear and fade on their own.
+
+## 16. Reduced motion
+- **Requirement:** Under the reduced-motion preference, ambient life, particles and
+  bouncing are off; reactions become a short highlight, and the entry card appears
+  without sliding.
+- **Acceptance:** With reduced motion set, no ambient particle is drawn.
+
 ## Non-goals
 - No combat, enemies, inventory, puzzles, physics, multiplayer, or procedural
   level generation beyond scenes to areas.

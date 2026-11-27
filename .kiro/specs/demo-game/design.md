@@ -156,6 +156,43 @@ Vite `base` is relative so the build works from a GitHub Pages project path. A
 GitHub Actions workflow builds and publishes it. The slides app is published from
 the same workflow to a sibling path.
 
+## Living world (added 2026-11-26)
+
+### Scenery layout (`scenery.ts`, pure)
+`sceneryFor(areaIndex, theme)` returns the objects in an area as
+`{ kind, x, y, slot }`: the theme props in the existing eight decorative slots
+(rotated by area index, as before), plus the two mood objects in two fixed slots
+near the walking line, so the character brushes past them on the way through.
+`nearestScenery(items, x, y, radius)` finds the object to react to. Quips are a
+fixed map from object kind to one line. Tests: deterministic, every mood gets its
+two objects, no object within the station's radius or a doorway corridor.
+
+### Reactions and ambient motion (`effects.ts`, `ambient.ts`, pure)
+Reactions are timelines: `reaction(kind, ageSeconds)` returns an offset, rotation,
+scale and glow for that moment, and identity before 0 and after the reaction ends.
+`main.ts` stores only when each object was last poked, so drawing stays a pure
+function of time. Ambient life is also a pure function of time and mood: each
+particle's position comes from a fixed seed and a formula, with no simulation
+state. Dust puffs, the entry card and the exit burst are timelines of the same kind.
+Tests cover every reaction kind, identity outside the timeline, determinism and
+bounds of the ambient particles.
+
+### Drawing (`draw.ts`)
+The station is drawn first. Then scenery and the character are sorted by their base
+y and drawn in that order, each with its reaction transform applied around its
+base. Mood objects are drawn with canvas paths in the game's own flat style.
+Ambient life is drawn above the floor and below the walls. The heads-up display
+gains "Stations seen n / m". A visited station shows a check mark. Text in the entry
+card is storyboard text drawn with `fillText`, never as HTML.
+
+### Wiring (`main.ts`)
+Each frame, `main.ts` reads input once and passes it to `step` as before. If the
+action edge was pressed away from a station, or a tap lands on an object, it pokes
+the nearest object and shows its quip in a bubble over the character. Brushing past
+is detected when the character comes within reach of an object it was not near in
+the previous frame. Opening a station adds it to the visited set and makes the
+character hop. `step` and the game rules are unchanged.
+
 ## Error handling
 
 | Operation | Failure | Behavior |

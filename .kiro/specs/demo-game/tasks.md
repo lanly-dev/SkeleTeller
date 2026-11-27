@@ -79,6 +79,25 @@
 **Review gate:** after T9 the game is playable. T10 to T12 prove versatility and
 hosting.
 
+## T13 — Scenery layout and mood objects
+- `src/scenery.ts` and tests; mood objects drawn in `draw.ts`; depth-sorted drawing.
+- **Done:** tests pass; every mood shows its two objects without covering the station or doors.
+
+## T14 — Reactions, quips and ambient life
+- `src/effects.ts`, `src/ambient.ts` and tests; brush, action and tap reactions; quip bubble.
+- **Done:** each object kind reacts all three ways in the browser check.
+
+## T15 — Character motion
+- Walk cycle, dust puffs, idle motion, station hop for all three avatars.
+- **Done:** screenshots of each avatar walking.
+
+## T16 — Area and progress feedback, reduced motion
+- Entry card, visited check marks, "Stations seen", exit confetti, reduced-motion fallbacks.
+- **Done:** the count rises in the browser check; no particles under reduced motion.
+
+## T17 — Acceptance for 12 to 16
+- **Done:** results recorded in `requirements.md`.
+
 ## Status
 
 - **2026-11-20, Kiro Web:** shared prepare helper and T0 to T5, merged as PR #1. Checked locally: tests, typecheck, validate and the build all pass.
