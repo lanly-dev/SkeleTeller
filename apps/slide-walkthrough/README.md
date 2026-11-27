@@ -1,9 +1,15 @@
 # SkeleTeller Storybook (Slide Walkthrough)
 
-App B of SkeleTeller. It turns the same storyboard as the game into a storybook
-style slide walkthrough: one slide per scene, paged at the reader's own pace, with
-numbered hotspots that reveal explanations. It shows the project's images and
-story. It does not embed or run the project itself.
+App B of SkeleTeller. It turns the same storyboard as the game into an illustrated
+storybook: a cover, one two-page spread per scene, and an end page, read at the
+reader's own pace. Each spread frames the project's screenshot inside a picture
+drawn from the storyboard's theme, with the story text on the facing page and
+numbered hotspots that reveal explanations. It does not embed or run the project.
+
+The pictures are drawn in code from the theme, the same character and props as the
+game: tap the character or any object and it reacts, the character gives a hint,
+the folded page corners turn the page, and **Read aloud** reads the page using the
+browser's own speech.
 
 **Read it:** https://lanly-dev.github.io/SkeleTeller/storybook/ (built from `demo/storyboard.yml`, currently a demo of SpectreGram).
 

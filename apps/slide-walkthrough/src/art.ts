@@ -78,7 +78,7 @@ const STARS: ReadonlyArray<[number, number, number, number]> = [
 
 function stars(w: number, h: number, maxY = 1): string {
   return STARS.filter(([, y]) => y <= maxY)
-    .map(([x, y, r, o]) => `<circle class="c-text" cx="${n(x * w)}" cy="${n(y * h)}" r="${r}" opacity="${o}" />`)
+    .map(([x, y, r, o]) => `<circle class="c-text twinkle" cx="${n(x * w)}" cy="${n(y * h)}" r="${r}" opacity="${o}" />`)
     .join('');
 }
 
@@ -104,8 +104,8 @@ function spooky(w: number, h: number, p: string): string {
 ${stars(w, h, 0.5)}
 <circle cx="${n(mx)}" cy="${n(my)}" r="${n(r * 2.1)}" fill="url(#${p}glow)" />
 <circle class="c-text" cx="${n(mx)}" cy="${n(my)}" r="${n(r)}" opacity="0.95" mask="url(#${p}moon)" />
-<path class="c-ink" d="${BAT}" transform="translate(${n(mx - r * 1.6)} ${n(my + r * 0.9)})" />
-<path class="c-ink" d="${BAT}" transform="translate(${n(mx - r * 2.4)} ${n(my + r * 1.7)}) scale(0.7)" opacity="0.8" />
+<g transform="translate(${n(mx - r * 1.6)} ${n(my + r * 0.9)})"><path class="c-ink bat" d="${BAT}" /></g>
+<g transform="translate(${n(mx - r * 2.4)} ${n(my + r * 1.7)}) scale(0.7)" opacity="0.8"><path class="c-ink bat" d="${BAT}" /></g>
 <rect x="0" y="${n(h * 0.5)}" width="${w}" height="${n(h * 0.3)}" fill="url(#${p}hz)" />
 ${hill(w, h, h * 0.72, 24 * s, 4, 0, 'c-far')}
 <g class="s-ink" fill="none" stroke-linecap="round" transform="translate(${n(tx)} ${n(ty)}) scale(${n(s * 1.05)})">
@@ -299,7 +299,7 @@ function propBody(kind: Prop, p: string): string {
   const shadow = (rx: number) => `<ellipse cx="0" cy="0" rx="${rx}" ry="6" fill="#000" opacity="0.26" />`;
   switch (kind) {
     case 'lamp':
-      return `${shadow(22)}<circle cx="0" cy="-130" r="62" fill="url(#${p}lamp)" />
+      return `${shadow(22)}<circle class="no-hit" cx="0" cy="-130" r="62" fill="url(#${p}lamp)" />
 <rect x="-4" y="-120" width="8" height="120" fill="#4a3520" /><rect x="-14" y="-8" width="28" height="8" rx="2" fill="#4a3520" />
 <rect x="-16" y="-156" width="32" height="7" rx="2" fill="#3b2a17" />
 <path d="M-12 -149 H12 L15 -118 H-15 Z" fill="#ffd27a" /><path d="M0 -142 C5 -136 5 -128 0 -124 C-5 -128 -5 -136 0 -142 Z" fill="#fff6dc" />
@@ -330,6 +330,61 @@ function propBody(kind: Prop, p: string): string {
   }
 }
 
+/* ------------------------------------------------------------ mood objects */
+
+export type MoodObject = 'pumpkin' | 'gravestone' | 'fence' | 'flowers' | 'palm' | 'arcade' | 'tree' | 'bench';
+
+/** Two scenery objects that belong to each mood, placed on every illustrated page. */
+export const MOOD_OBJECTS: Record<Mood, readonly [MoodObject, MoodObject]> = {
+  spooky: ['pumpkin', 'gravestone'],
+  cozy: ['fence', 'flowers'],
+  neon: ['palm', 'arcade'],
+  clean: ['tree', 'bench'],
+};
+
+function moodObjectBody(kind: MoodObject): string {
+  const shadow = (rx: number) => `<ellipse cx="0" cy="0" rx="${rx}" ry="6" fill="#000" opacity="0.26" />`;
+  switch (kind) {
+    case 'pumpkin':
+      return `${shadow(34)}<ellipse class="c-accent-d" cx="-15" cy="-26" rx="19" ry="25" /><ellipse class="c-accent-d" cx="15" cy="-26" rx="19" ry="25" />
+<ellipse class="c-accent" cx="0" cy="-26" rx="19" ry="26" />
+<path d="M-1 -50 q2 -11 10 -13" fill="none" stroke="#4a6a2a" stroke-width="5" stroke-linecap="round" />
+<path d="M-15 -32 l6 -9 l6 9 z M3 -32 l6 -9 l6 9 z M-16 -17 q16 11 32 0 l-6 2 l-4 -3 l-6 4 l-6 -4 l-4 3 z" fill="#3b2208" />`;
+    case 'gravestone':
+      return `${shadow(32)}<path d="M-26 0 V-52 Q-26 -80 0 -80 Q26 -80 26 -52 V0 Z" fill="#6b7686" />
+<path d="M-26 -10 V-52 Q-26 -80 0 -80" fill="none" stroke="#8b96a6" stroke-width="3" />
+<path d="M-10 -54 H10 M0 -64 V-36" stroke="#4a5462" stroke-width="5" stroke-linecap="round" />
+<path d="M-30 0 q4 -10 8 0 q4 -8 8 0 M18 0 q4 -10 8 0" fill="none" stroke="#3f6b3a" stroke-width="3" stroke-linecap="round" />`;
+    case 'fence':
+      return `${shadow(64)}<g fill="#c9a26b" stroke="#8a6338" stroke-width="2">
+<rect x="-62" y="-46" width="124" height="7" /><rect x="-62" y="-24" width="124" height="7" />
+${[-54, -18, 18, 54].map((x) => `<path d="M${x - 7} 0 V-56 L${x} -66 L${x + 7} -56 V0 Z" />`).join('')}</g>`;
+    case 'flowers':
+      return `${shadow(40)}${[[-26, 'c-accent', -44], [0, 'c-station', -58], [24, 'c-accent-l', -40], [-8, 'c-accent-l', -30], [12, 'c-station', -26]]
+        .map(([x, c, h]) => `<path d="M${x} 0 V${h}" stroke="#4a8a4a" stroke-width="3" /><g class="${c}">${[0, 72, 144, 216, 288].map((a) => `<circle cx="${n(Number(x) + 6 * Math.cos((Number(a) * Math.PI) / 180))}" cy="${n(Number(h) + 6 * Math.sin((Number(a) * Math.PI) / 180))}" r="5" />`).join('')}</g><circle cx="${x}" cy="${h}" r="3.5" fill="#ffd27a" />`)
+        .join('')}`;
+    case 'palm':
+      return `${shadow(26)}<path class="s-ink" d="M0 0 C6 -50 -4 -100 12 -150" fill="none" stroke-width="12" stroke-linecap="round" />
+<g class="c-ink s-station" stroke-width="2.5" stroke-linejoin="round" transform="translate(12 -150)">
+<path d="M0 0 C-30 -18 -58 -8 -74 14 C-50 0 -26 -2 0 6 Z" /><path d="M0 0 C30 -20 60 -10 76 12 C52 -2 26 -4 0 6 Z" />
+<path d="M0 0 C-10 -34 -36 -52 -60 -50 C-36 -40 -18 -24 -4 4 Z" /><path d="M0 0 C12 -34 38 -50 62 -46 C38 -38 20 -22 4 4 Z" />
+</g><path class="s-accent" d="M0 0 C6 -50 -4 -100 12 -150" fill="none" stroke-width="2" opacity="0.7" />`;
+    case 'arcade':
+      return `${shadow(34)}<path class="c-ink" d="M-30 0 V-118 L-22 -132 H22 L30 -118 V0 Z" />
+<rect class="c-station" x="-20" y="-112" width="40" height="32" rx="3" />
+<path class="s-accent" d="M-30 0 V-118 L-22 -132 H22 L30 -118 V0" fill="none" stroke-width="2.5" />
+<path class="c-bg-d" d="M-34 -72 H34 L28 -54 H-28 Z" /><circle class="c-accent" cx="-12" cy="-64" r="5" /><circle class="c-station" cx="4" cy="-64" r="5" /><circle class="c-accent-l" cx="16" cy="-64" r="5" />
+<path class="c-accent" d="M-8 -126 h16 v6 h-16 z" />`;
+    case 'tree':
+      return `${shadow(40)}<rect x="-8" y="-70" width="16" height="70" rx="4" fill="#7a5532" />
+<circle cx="0" cy="-104" r="44" fill="#4f9f62" /><circle cx="-26" cy="-82" r="28" fill="#5cae6e" /><circle cx="26" cy="-84" r="30" fill="#5cae6e" />
+<circle cx="-12" cy="-118" r="12" fill="#7cc78c" opacity="0.6" />`;
+    case 'bench':
+      return `${shadow(56)}<rect x="-54" y="-34" width="108" height="9" rx="3" fill="#a07a4a" /><rect x="-54" y="-58" width="108" height="8" rx="3" fill="#a07a4a" /><rect x="-54" y="-72" width="108" height="8" rx="3" fill="#a07a4a" />
+<rect x="-48" y="-72" width="7" height="72" fill="#4a3a2a" /><rect x="41" y="-72" width="7" height="72" fill="#4a3a2a" />`;
+  }
+}
+
 /* ------------------------------------------------------------- composition */
 
 function groundDefs(p: string): string {
@@ -339,17 +394,42 @@ function groundDefs(p: string): string {
 </defs>`;
 }
 
+/**
+ * Extra tap area for thin objects only, in their own units with the base at y = 0:
+ * [left, width, height]. Solid objects are hit on their painted shapes, so their tap
+ * area never covers a neighbour.
+ */
+const HIT: Partial<Record<Placed['kind'], readonly [number, number, number]>> = {
+  banner: [-8, 80, 160],
+  lamp: [-18, 36, 160],
+  flowers: [-32, 64, 64],
+};
+
+function hitArea(kind: Placed['kind']): string {
+  const h = HIT[kind];
+  return h ? `<rect class="obj-hit" x="${h[0]}" y="${-h[2]}" width="${h[1]}" height="${h[2]}" fill="transparent" />` : '';
+}
+
 interface Placed {
+  /** Object name for the touch reaction: 'avatar', a prop or a mood object. Never storyboard text. */
+  kind: 'avatar' | Prop | MoodObject;
   x: number;
   scale: number;
   flip?: boolean;
+  /** Back-row objects stand a little higher and smaller, behind the front row. */
+  back?: boolean;
   body: string;
 }
 
 function ground(w: number, items: Placed[], p: string): string {
-  const base = 226;
-  const body = items
-    .map((it) => `<g transform="translate(${n(it.x)} ${base}) scale(${it.flip ? -it.scale : it.scale} ${it.scale})">${it.body}</g>`)
+  // Back row first, so the front row is drawn over it.
+  const ordered = [...items.filter((i) => i.back), ...items.filter((i) => !i.back)];
+  const body = ordered
+    .map((it) => {
+      const base = it.back ? 198 : 226;
+      const scale = it.back ? it.scale * 0.78 : it.scale;
+      return `<g transform="translate(${n(it.x)} ${base}) scale(${it.flip ? -scale : scale} ${scale})"><g class="obj obj-${it.kind}" data-obj="${it.kind}"><g class="obj-in">${hitArea(it.kind)}${it.body}</g></g></g>`;
+    })
     .join('');
   return svg(w, 240, 'ground', groundDefs(p) + body);
 }
@@ -367,25 +447,28 @@ export function coverArt(art: ArtTheme, prefix: string): Drawing {
   const p = safeId(prefix);
   const sceneBunting = art.props.includes('banner') ? bunting(1200, 54, 42) : '';
   const back = backdrop(art.mood, 1200, 640, prefix).replace('</svg>', `${sceneBunting}</svg>`);
-  const props = art.props.filter((x) => x !== 'banner').slice(0, 3);
-  const slots = [1010, 1120, 300];
-  const items: Placed[] = [{ x: 860, scale: 1, body: avatarBody(art.avatar, p, 'wave') }];
-  props.forEach((k, i) => items.push({ x: slots[i], scale: 0.95, body: propBody(k, p) }));
+  const props = art.props.filter((x) => x !== 'banner').slice(0, 4);
+  const slots = [1010, 1120, 300, 190];
+  const items: Placed[] = [{ kind: 'avatar', x: 860, scale: 1, body: avatarBody(art.avatar, p, 'wave') }];
+  props.forEach((k, i) => items.push({ kind: k, x: slots[i], scale: 0.95, body: propBody(k, p) }));
+  MOOD_OBJECTS[art.mood].forEach((k, i) => items.push({ kind: k, x: [470, 690][i], scale: 1, back: true, body: moodObjectBody(k) }));
   return { backdrop: back, ground: ground(1200, items, p) };
 }
 
 /** Left-hand page of a spread: scenery, and the avatar pointing up at the framed picture. */
 export function pageArt(art: ArtTheme, index: number, prefix: string): Drawing {
   const p = safeId(prefix);
-  const items: Placed[] = [{ x: 112, scale: 0.92, body: avatarBody(art.avatar, p, 'point') }];
-  propsFor(art.props, index, 2).forEach((k, i) => items.push({ x: [450, 540][i], scale: 0.82, body: propBody(k, p) }));
+  const items: Placed[] = [{ kind: 'avatar', x: 104, scale: 0.9, body: avatarBody(art.avatar, p, 'point') }];
+  propsFor(art.props, index, 4).forEach((k, i) => items.push({ kind: k, x: [246, 346, 448, 550][i], scale: 0.68, flip: i % 2 === 1, body: propBody(k, p) }));
+  MOOD_OBJECTS[art.mood].forEach((k, i) => items.push({ kind: k, x: [310, 504][i], scale: 0.9, back: true, body: moodObjectBody(k) }));
   return { backdrop: backdrop(art.mood, 600, 640, prefix), ground: ground(600, items, p) };
 }
 
 /** Closing page for the outro: wide scenery, the avatar waving goodbye among the props. */
 export function endArt(art: ArtTheme, prefix: string): Drawing {
   const p = safeId(prefix);
-  const items: Placed[] = [{ x: 600, scale: 1.05, body: avatarBody(art.avatar, p, 'wave') }];
-  art.props.slice(0, 4).forEach((k, i) => items.push({ x: [230, 370, 840, 980][i], scale: 0.92, flip: i < 2, body: propBody(k, p) }));
+  const items: Placed[] = [{ kind: 'avatar', x: 600, scale: 1.05, body: avatarBody(art.avatar, p, 'wave') }];
+  art.props.slice(0, 6).forEach((k, i) => items.push({ kind: k, x: [230, 370, 840, 980, 110, 1100][i], scale: 0.92, flip: i % 2 === 0, body: propBody(k, p) }));
+  MOOD_OBJECTS[art.mood].forEach((k, i) => items.push({ kind: k, x: [470, 740][i], scale: 1, back: true, body: moodObjectBody(k) }));
   return { backdrop: backdrop(art.mood, 1200, 640, prefix), ground: ground(1200, items, p) };
 }

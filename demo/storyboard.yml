@@ -22,12 +22,12 @@ scenes:
   - type: feature
     visual: assets/analysed-track.png
     caption: Drop in a track and see its whole spectrogram with a verdict banner.
-    narration: SpectreGram renders the full track as a spectrogram, with a dB legend and a ruler. The banner above it estimates the frequency cutoff and says whether that is normal for the format. Click the ruler to seek and cue playback, or drag to zoom into a segment and re-analyse it.
+    narration: "You drop a track onto the window, and the whole song unfolds as a glowing spectrogram, with a dB legend down the side and a ruler along the bottom. Above it, a banner gives its estimate of the frequency cutoff and whether that is normal for the format. Click the ruler to cue playback from any moment, or drag across it to zoom into one stretch and look again."
 
   - type: callout
     visual: assets/costume-verdict.png
     caption: A WAV that stops at 15.7 kHz gives itself away as a lossy file.
-    narration: Real lossless audio reaches high frequencies. This WAV is cut off near 15.7 kHz, which is typical of a 128k MP3, so the verdict reads Costume. Verdicts range from genuine to inconclusive, costume and lossy.
+    narration: "This file swore it was a lossless WAV. But real lossless audio climbs high into the treble, and this one stops near 15.7 kHz, just where a 128k MP3 would. The ghost was not fooled: the verdict reads Costume. Other files may be judged genuine, inconclusive or plainly lossy."
     callouts:
       - x: 0.615
         y: 0.12
@@ -42,7 +42,7 @@ scenes:
   - type: callout
     visual: assets/folder-scan-rating.png
     caption: Scan a whole folder and get a collector rating for the lot.
-    narration: One click on Scan judges every file in a folder, subfolders included. The result is a rating, from Crypt Keeper down to Costume Party Noob, with counts per verdict. You can save the result as a Markdown report.
+    narration: "Then you point it at a whole folder. One click on Scan, and every file is judged, subfolders and all. At the end comes your rating, anywhere from Crypt Keeper down to Costume Party Noob, with a count for each verdict. You can keep the findings as a Markdown report."
     callouts:
       - x: 0.68
         y: 0.49
@@ -57,7 +57,7 @@ scenes:
   - type: callout
     visual: assets/spectral-message.png
     caption: Hide a short message in the spectrogram of a new WAV.
-    narration: The Haunt feature writes up to 32 characters of text, or shapes, into the spectrogram of a new WAV file. The original file is never changed, and the verdict stays safe. Here, pumpkin, ghost, bat and spider silhouettes are cut into the spectrum.
+    narration: "Some nights call for mischief. Haunt writes up to 32 characters of text, or shapes, into the spectrogram of a brand-new WAV, and leaves your original untouched. Here a row of Halloween silhouettes hides inside the music, and the verdict stays a calm Inconclusive."
     callouts:
       - x: 0.38
         y: 0.55
@@ -71,7 +71,7 @@ scenes:
 
   - type: code
     caption: Run it from source with two commands.
-    narration: SpectreGram is an Electron app. Install the dependencies, then start the dev loop, which launches the desktop app with hot reload.
+    narration: "Want to summon it yourself? SpectreGram is an Electron app. Install its dependencies, start the dev loop, and the desktop app appears, with hot reload."
     code:
       language: sh
       snippet: |
@@ -81,4 +81,4 @@ scenes:
 
   - type: outro
     caption: SpectreGram is open source under the MIT licence.
-    narration: Find the code, the README and the releases in the repository. SpectreGram was built for Kiroween 2026.
+    narration: "And so the ghost lays down its lantern. The code, the README and the releases all live in the repository. SpectreGram was built for Kiroween 2026."

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AVATARS, backdrop, coverArt, DEFAULT_ART, endArt, MOODS, pageArt, PROPS, propsFor, resolveArt } from './art';
+import { AVATARS, backdrop, coverArt, DEFAULT_ART, endArt, MOOD_OBJECTS, MOODS, pageArt, PROPS, propsFor, resolveArt } from './art';
 
 const all = (d: { backdrop: string; ground: string }) => d.backdrop + d.ground;
 
@@ -84,6 +84,43 @@ describe('art safety', () => {
       expect(s).not.toContain('#123456');
       expect(s).not.toContain('#abcdef');
     }
+  });
+});
+
+describe('touchable objects (requirements 18 and 19)', () => {
+  const kinds = (s: string) => [...s.matchAll(/data-obj="([^"]+)"/g)].map((m) => m[1]);
+  const known = new Set<string>(['avatar', ...PROPS, ...Object.values(MOOD_OBJECTS).flat()]);
+
+  it('tags every object with a known name only', () => {
+    for (const mood of MOODS) {
+      const art = { mood, avatar: 'ghost' as const, props: [...PROPS] };
+      for (const d of [coverArt(art, 'c'), pageArt(art, 1, 'p'), endArt(art, 'e')]) {
+        const found = kinds(d.ground);
+        expect(found.length).toBeGreaterThan(0);
+        for (const k of found) expect(known.has(k)).toBe(true);
+      }
+    }
+  });
+
+  it('puts the avatar, up to four props and both mood objects on a page', () => {
+    for (const mood of MOODS) {
+      const found = kinds(pageArt({ mood, avatar: 'robot', props: ['plant', 'lamp', 'crate', 'sign', 'bookshelf'] }, 0, 'p').ground);
+      expect(found.filter((k) => k === 'avatar')).toHaveLength(1);
+      expect(found.filter((k) => (PROPS as readonly string[]).includes(k))).toHaveLength(4);
+      for (const m of MOOD_OBJECTS[mood]) expect(found).toContain(m);
+    }
+  });
+
+  it('rotates which props stand on each page', () => {
+    const art = { mood: 'cozy' as const, avatar: 'explorer' as const, props: [...PROPS] };
+    const props = (i: number) => kinds(pageArt(art, i, 'p').ground).filter((k) => (PROPS as readonly string[]).includes(k)).sort().join();
+    expect(props(0)).not.toBe(props(1));
+  });
+
+  it('marks stars and bats for idle motion', () => {
+    const s = backdrop('spooky', 600, 640, 's');
+    expect(s).toContain('twinkle');
+    expect(s).toContain('class="c-ink bat"');
   });
 });
 

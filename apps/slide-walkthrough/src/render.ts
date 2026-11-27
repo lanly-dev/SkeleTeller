@@ -1,5 +1,15 @@
 import { coverArt, endArt, pageArt, type ArtTheme, type Drawing } from './art';
-import type { SlideModel } from './slides';
+import { canSpeak, pageSpeech, speak, stopSpeaking } from './readAloud';
+import type { SlideKind, SlideModel } from './slides';
+
+/** What the guide character says when tapped. Fixed per page type, never storyboard text. */
+const GUIDE_HINTS: Record<SlideKind, string> = {
+  title: 'Hello! Turn the page to begin the story.',
+  feature: 'Have a look at the picture, then turn the page.',
+  callout: 'Tap the numbered points in the picture!',
+  code: 'Try these commands yourself.',
+  outro: 'Thanks for reading! The link is just above.',
+};
 
 /**
  * Builds the DOM for one page of the storybook.
@@ -55,8 +65,80 @@ export interface RenderedSlide {
   closeHotspot(): boolean;
 }
 
+/** Restart an object's reaction. A timer ends it, so it also ends when animation is off. */
+function poke(obj: Element): void {
+  const inner = obj.querySelector('.obj-in') ?? obj;
+  inner.classList.remove('is-poked');
+  void (inner as HTMLElement).getBoundingClientRect();
+  inner.classList.add('is-poked');
+  window.setTimeout(() => inner.classList.remove('is-poked'), 900);
+}
+
+/** Pokes the avatar on this page, if it has one. */
+function pokeAvatar(section: HTMLElement): void {
+  const a = section.querySelector('[data-obj="avatar"]');
+  if (a) poke(a);
+}
+
+/** Speech bubble shown over the avatar for a moment. */
+function guideBubble(section: HTMLElement, kind: SlideKind): () => void {
+  const bubble = el('div', 'guide-bubble');
+  bubble.setAttribute('aria-hidden', 'true');
+  section.append(bubble);
+  let timer = 0;
+  return () => {
+    const avatar = section.querySelector('[data-obj="avatar"]');
+    if (!avatar) return;
+    const a = avatar.getBoundingClientRect();
+    const s = section.getBoundingClientRect();
+    bubble.textContent = GUIDE_HINTS[kind];
+    bubble.style.left = `${a.left + a.width / 2 - s.left}px`;
+    bubble.style.bottom = `${s.bottom - a.top + 10}px`;
+    bubble.classList.remove('is-shown');
+    void bubble.offsetWidth;
+    bubble.classList.add('is-shown');
+    window.clearTimeout(timer);
+    timer = window.setTimeout(() => bubble.classList.remove('is-shown'), 2600);
+  };
+}
+
+/** Folded page corner that turns the page. Back and Next stay the accessible controls. */
+function corner(dir: 1 | -1, turn: (dir: 1 | -1) => void): HTMLElement {
+  const b = el('button', dir > 0 ? 'corner corner-next' : 'corner corner-back');
+  b.type = 'button';
+  b.tabIndex = -1;
+  b.setAttribute('aria-hidden', 'true');
+  b.title = dir > 0 ? 'Turn the page' : 'Turn back';
+  b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    turn(dir);
+  });
+  return b;
+}
+
+function readAloudButton(slide: SlideModel): HTMLElement | undefined {
+  if (!canSpeak()) return undefined;
+  const b = el('button', 'read-aloud', 'Read aloud');
+  b.type = 'button';
+  b.setAttribute('aria-pressed', 'false');
+  const idle = () => {
+    b.setAttribute('aria-pressed', 'false');
+    b.textContent = 'Read aloud';
+  };
+  b.addEventListener('click', () => {
+    if (b.getAttribute('aria-pressed') === 'true') {
+      stopSpeaking();
+      return;
+    }
+    b.setAttribute('aria-pressed', 'true');
+    b.textContent = 'Stop reading';
+    speak(pageSpeech(slide), document.documentElement.lang || 'en', idle);
+  });
+  return b;
+}
+
 /** Figure whose hotspot buttons are placed in percent of the image. One label open at a time. */
-function hotspotFigure(slide: SlideModel, assetBase: string) {
+function hotspotFigure(slide: SlideModel, assetBase: string, onOpen: () => void) {
   const figure = el('div', 'figure');
   figure.append(image(assetBase + slide.image!.src, slide.image!.alt, slide.index + 1));
   const note = el('p', 'hotspot-note');
@@ -85,6 +167,7 @@ function hotspotFigure(slide: SlideModel, assetBase: string) {
       if (!wasOpen) {
         b.setAttribute('aria-expanded', 'true');
         note.textContent = `${h.number}. ${h.label}`;
+        onOpen();
         note.scrollIntoView?.({ block: 'nearest' });
       }
     });
@@ -133,7 +216,10 @@ function cover(section: HTMLElement, slide: SlideModel, art: ArtTheme) {
   const plaque = el('div', 'cover-plaque');
   plaque.append(heading(slide, 'h1'));
   if (slide.subheading) plaque.append(el('p', 'cover-tagline', slide.subheading));
-  section.append(plaque, el('p', 'cover-imprint', 'A SkeleTeller Storybook'));
+  plaque.append(el('p', 'cover-imprint', 'A SkeleTeller Storybook'));
+  const read = readAloudButton(slide);
+  if (read) plaque.append(read);
+  section.append(plaque);
 }
 
 function ending(section: HTMLElement, slide: SlideModel, art: ArtTheme) {
@@ -144,6 +230,8 @@ function ending(section: HTMLElement, slide: SlideModel, art: ArtTheme) {
   if (story) card.append(story);
   const a = link(slide);
   if (a) card.append(a);
+  const read = readAloudButton(slide);
+  if (read) card.append(read);
   section.append(card);
 }
 
@@ -155,7 +243,7 @@ function spread(section: HTMLElement, slide: SlideModel, art: ArtTheme, assetBas
   text.append(el('p', 'chapter', `Chapter ${slide.chapter ?? slide.index}`), heading(slide, 'h2'));
 
   if (slide.kind === 'callout') {
-    const { figure, note, closeAll } = hotspotFigure(slide, assetBase);
+    const { figure, note, closeAll } = hotspotFigure(slide, assetBase, () => pokeAvatar(section));
     closeHotspot = closeAll;
     frame.append(figure);
     text.append(note);
@@ -170,12 +258,20 @@ function spread(section: HTMLElement, slide: SlideModel, art: ArtTheme, assetBas
 
   const story = narration(slide.narration);
   if (story) text.append(story);
+  const read = readAloudButton(slide);
+  if (read) text.append(read);
   text.append(el('p', 'page-number', String(slide.index + 1)));
   section.append(left, text);
   return closeHotspot;
 }
 
-export function renderSlide(slide: SlideModel, total: number, assetBase: string, art: ArtTheme): RenderedSlide {
+export function renderSlide(
+  slide: SlideModel,
+  total: number,
+  assetBase: string,
+  art: ArtTheme,
+  turn: (dir: 1 | -1) => void = () => {},
+): RenderedSlide {
   const layout = slide.kind === 'title' ? 'cover' : slide.kind === 'outro' ? 'end' : 'spread';
   const section = el('section', `slide slide-${slide.kind} slide-${layout}`);
   section.setAttribute('aria-roledescription', 'page');
@@ -185,6 +281,18 @@ export function renderSlide(slide: SlideModel, total: number, assetBase: string,
   if (layout === 'cover') cover(section, slide, art);
   else if (layout === 'end') ending(section, slide, art);
   else closeHotspot = spread(section, slide, art, assetBase);
+
+  // Touchable art: any object reacts; the guide also speaks.
+  const showHint = guideBubble(section, slide.kind);
+  section.addEventListener('click', (e) => {
+    const obj = (e.target as Element | null)?.closest?.('[data-obj]');
+    if (!obj) return;
+    poke(obj);
+    if (obj.getAttribute('data-obj') === 'avatar') showHint();
+  });
+
+  if (slide.index > 0) section.append(corner(-1, turn));
+  if (slide.index < total - 1) section.append(corner(1, turn));
 
   return { element: section, closeHotspot };
 }

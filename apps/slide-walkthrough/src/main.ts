@@ -1,6 +1,7 @@
 import './style.css';
 import { resolveArt } from './art';
 import { createControls } from './controls';
+import { stopSpeaking } from './readAloud';
 import { renderSlide, type RenderedSlide } from './render';
 import { clampIndex, formatHash, parseHash } from './router';
 import { buildSlides } from './slides';
@@ -45,7 +46,8 @@ function show(index: number, opts: { push?: boolean; focus?: boolean } = {}) {
   const direction = current < 0 ? '' : i > current ? 'turn-forward' : 'turn-back';
   current = i;
   const slide = slides[i];
-  rendered = renderSlide(slide, total, './', art);
+  stopSpeaking();
+  rendered = renderSlide(slide, total, './', art, (dir) => show(current + dir, { push: true }));
   if (direction) rendered.element.classList.add(direction);
   stage.replaceChildren(rendered.element);
   counter.textContent = `${i + 1} / ${total}`;

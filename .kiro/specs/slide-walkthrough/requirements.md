@@ -201,3 +201,21 @@ Run on 2026-11-20 in the Kiro IDE, against `vite preview` with headless Edge (Ch
 | 10 | Safe rendering | **Pass.** `<b>Bold?</b><img src=x onerror=alert(1)>` and `<i>label</i>` show as plain text, create no elements and open no dialog. Links are http(s) only. A `../` asset path fails the build with "must stay inside the storyboard folder". |
 | 11 | Hosting | **Pass.** Run 44810671438 (commit `6363af1`) deployed both apps. The full check above passed again at https://lanly-dev.github.io/SkeleTeller/storybook/, including offline paging and no external requests. |
 | 12 | Accessibility | **Pass.** No unlabelled buttons, every image has alt text, the live region announces "Slide n of N: caption", and motion stops under reduced-motion. A screen-reader listening pass was not done. |
+## Acceptance record, storybook pages (13 to 22)
+
+Run on 2026-11-21 in headless Edge against `vite preview`, with real mouse events for
+every click. Fixtures: `demo/storyboard.yml` (spooky, ghost), the TaskFlow sample
+(clean, explorer), and two copies of it outside the repo themed cozy and neon.
+
+| # | Requirement | Result |
+|---|---|---|
+| 13 | Illustrated pages | **Pass.** Cover, five spreads and an end page for each of the four moods; ghost, explorer and robot all appear; different themes give different books with no code change. |
+| 14 | Story layout | **Pass.** Content scenes read Chapter 1 to 5; screenshot framed on the left page, story on the right; pages stack on a 390 px phone. |
+| 15 | Narration as page text | **Pass.** Every narration shows on its page with a drop cap, no click needed. |
+| 16 | Page turns | **Pass.** Direction-aware turn from the gutter; off under reduced motion; every paging control still works. |
+| 17 | Art safety | **Pass.** `art.test.ts` renders art for a theme full of markup and finds none of it, and no storyboard color, in the markup. |
+| 18 | Fuller scenes | **Pass.** Each page shows the avatar, up to four props and both mood objects (spooky page 3: pumpkin, gravestone, avatar, sign, lamp, banner). |
+| 19 | Touchable art | **Pass.** A real tap on a visible part of each of the six objects on page 3 made it react; a click on the screenshot triggered no art. Thin objects first missed and got tap areas; tap areas were then narrowed so they never cover a neighbour. |
+| 20 | Guide character | **Pass.** Tapping the ghost showed "Tap the numbered points in the picture!"; opening a hotspot bounced the ghost. |
+| 21 | Page corners | **Pass.** Right corner went from page 3 to 4, left corner back to 3; no back corner on the cover, no next corner on the end page. |
+| 22 | Read aloud | **Pass.** Pressing it started speech; paging stopped it and reset the control. |

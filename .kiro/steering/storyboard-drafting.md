@@ -64,8 +64,12 @@ Five types only. Each type allows only its own fields; an unknown field is an er
 
 - **Caption:** one short sentence, active voice, up to 200 characters. It is the
   headline shown first.
-- **Narration:** the longer explanation, up to 1000 characters. Shown when the
-  player opens a station or the reader expands a slide.
+- **Narration:** up to 1000 characters, written as a short storybook passage. It is
+  the page text in SkeleTeller Storybook and the panel text in SkeleTeller Quest.
+  Tell it to the reader ("You drop a track onto the window, and the whole song
+  unfolds..."), keep a light thread from scene to scene, and let the mood colour the
+  words. Every claim must still be true of the project: describe only what the
+  screenshot shows and the README states. No invented features, numbers or quotes.
 - **Callouts:** `x` and `y` are fractions of the image, 0 to 1 from the top-left
   corner. Measure them on the actual image. Two to four per scene.
 - **Code:** keep snippets to about 15 lines. `highlight_lines` are one-based and
