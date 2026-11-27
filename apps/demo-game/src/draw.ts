@@ -1,5 +1,8 @@
 import type { Avatar, Prop, Scene, Storyboard } from '../../../skeleton/src/types';
+import { ambientParticles } from './ambient';
+import { confetti, dustLook, fade, reaction, type Pose, type Puff } from './effects';
 import type { GameState } from './game';
+import { SIZE, type MoodObject, type SceneryItem } from './scenery';
 import { fitText, wrapLines } from './text';
 import type { ResolvedTheme } from './theme';
 import { DOORWAY, WORLD_HEIGHT, WORLD_WIDTH, type Area } from './world';
@@ -9,17 +12,6 @@ const WALL = 24;
 const FONT = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
 const MONO = 'ui-monospace, "Cascadia Mono", Consolas, monospace';
 
-/** Fixed decorative slots, clear of the central station and the doorway corridor. */
-const PROP_SLOTS: ReadonlyArray<[number, number]> = [
-  [110, 112],
-  [850, 112],
-  [110, 432],
-  [850, 432],
-  [300, 92],
-  [660, 92],
-  [300, 452],
-  [660, 452],
-];
 
 export interface Frame {
   storyboard: Storyboard;
@@ -35,6 +27,22 @@ export interface Frame {
   prompt: string;
   /** Short movement hint shown in the start area. */
   hint: string;
+  living: Living;
+}
+
+/** Everything that makes the world respond. Kept by main.ts; drawing reads it as a snapshot. */
+export interface Living {
+  items: readonly SceneryItem[];
+  /** When each object (by slot) was last poked, in seconds. */
+  pokedAt: ReadonlyMap<number, number>;
+  avatarPokedAt: number;
+  /** When the character entered the current area. */
+  enteredAt: number;
+  visited: ReadonlySet<number>;
+  stationsTotal: number;
+  quip?: { text: string; at: number };
+  dust: readonly Puff[];
+  reduced: boolean;
 }
 
 // ---------- color helpers ----------
@@ -437,8 +445,9 @@ function drawExit(ctx: CanvasRenderingContext2D, area: Area, theme: ResolvedThem
 
 // ---------- avatar ----------
 
-function drawAvatar(ctx: CanvasRenderingContext2D, avatar: Avatar, state: GameState, theme: ResolvedTheme, time: number, moving: boolean) {
-  const bob = moving ? Math.sin(time * 14) * 2.5 : Math.sin(time * 2) * 1;
+function drawAvatar(ctx: CanvasRenderingContext2D, avatar: Avatar, state: GameState, theme: ResolvedTheme, time: number, moving: boolean, reduced: boolean) {
+  const bob = reduced ? 0 : moving ? Math.sin(time * 14) * 2.5 : Math.sin(time * 2) * 1;
+  const stride = moving && !reduced ? Math.sin(time * 14) * 4 : 0;
   const { x } = state;
   const y = state.y + bob;
   const flip = state.facing === 'left' ? -1 : 1;
@@ -452,6 +461,11 @@ function drawAvatar(ctx: CanvasRenderingContext2D, avatar: Avatar, state: GameSt
   ctx.scale(flip, 1);
   switch (avatar) {
     case 'explorer':
+      ctx.fillStyle = '#2c3a4e';
+      roundRect(ctx, -8 + stride, 14, 6, 10, 2);
+      ctx.fill();
+      roundRect(ctx, 2 - stride, 14, 6, 10, 2);
+      ctx.fill();
       ctx.fillStyle = '#3d6fb6';
       roundRect(ctx, -11, -2, 22, 22, 6);
       ctx.fill();
@@ -467,6 +481,9 @@ function drawAvatar(ctx: CanvasRenderingContext2D, avatar: Avatar, state: GameSt
       ctx.fillRect(4, -14, 3, 3);
       break;
     case 'robot':
+      ctx.fillStyle = '#6b7a89';
+      ctx.fillRect(-9 + stride * 0.7, 16, 6, 8);
+      ctx.fillRect(3 - stride * 0.7, 16, 6, 8);
       ctx.fillStyle = '#9aa7b4';
       roundRect(ctx, -12, -2, 24, 22, 4);
       ctx.fill();
@@ -490,7 +507,7 @@ function drawAvatar(ctx: CanvasRenderingContext2D, avatar: Avatar, state: GameSt
       ctx.lineTo(14, 20);
       for (let i = 0; i < 4; i++) {
         const sx = 14 - i * 7;
-        ctx.lineTo(sx - 3.5, 14 + Math.sin(time * 6 + i) * 2);
+        ctx.lineTo(sx - 3.5, 14 + Math.sin(time * (moving ? 14 : 6) + i) * (moving ? 3.5 : 2));
         ctx.lineTo(sx - 7, 20);
       }
       ctx.closePath();
@@ -504,6 +521,377 @@ function drawAvatar(ctx: CanvasRenderingContext2D, avatar: Avatar, state: GameSt
       break;
   }
   ctx.restore();
+}
+
+// ---------- mood objects ----------
+
+type Ink = 'accent' | 'accentD' | 'accentL' | 'station' | 'stationD' | 'ink' | 'bgD' | string;
+interface Shape {
+  d: string;
+  fill?: Ink;
+  stroke?: Ink;
+  width?: number;
+  alpha?: number;
+}
+
+/** Same shapes as the storybook's mood objects, as SVG path data drawn through Path2D. */
+const MOOD_SHAPES: Record<MoodObject, { scale: number; shapes: Shape[] }> = {
+  pumpkin: {
+    scale: 0.8,
+    shapes: [
+      { d: 'M-34 0 a34 6 0 1 0 68 0 a34 6 0 1 0 -68 0', fill: '#000', alpha: 0.26 },
+      { d: 'M-34 -26 a19 25 0 1 0 38 0 a19 25 0 1 0 -38 0', fill: 'accentD' },
+      { d: 'M-4 -26 a19 25 0 1 0 38 0 a19 25 0 1 0 -38 0', fill: 'accentD' },
+      { d: 'M-19 -26 a19 26 0 1 0 38 0 a19 26 0 1 0 -38 0', fill: 'accent' },
+      { d: 'M-1 -50 q2 -11 10 -13', stroke: '#4a6a2a', width: 5 },
+      { d: 'M-15 -32 l6 -9 l6 9 z M3 -32 l6 -9 l6 9 z M-16 -17 q16 11 32 0 l-6 2 l-4 -3 l-6 4 l-6 -4 l-4 3 z', fill: '#3b2208' },
+    ],
+  },
+  gravestone: {
+    scale: 0.8,
+    shapes: [
+      { d: 'M-32 0 a32 6 0 1 0 64 0 a32 6 0 1 0 -64 0', fill: '#000', alpha: 0.26 },
+      { d: 'M-26 0 V-52 Q-26 -80 0 -80 Q26 -80 26 -52 V0 Z', fill: '#6b7686' },
+      { d: 'M-26 -10 V-52 Q-26 -80 0 -80', stroke: '#8b96a6', width: 3 },
+      { d: 'M-10 -54 H10 M0 -64 V-36', stroke: '#4a5462', width: 5 },
+      { d: 'M-30 0 q4 -10 8 0 q4 -8 8 0 M18 0 q4 -10 8 0', stroke: '#3f6b3a', width: 3 },
+    ],
+  },
+  fence: {
+    scale: 0.8,
+    shapes: [
+      { d: 'M-64 0 a64 6 0 1 0 128 0 a64 6 0 1 0 -128 0', fill: '#000', alpha: 0.26 },
+      { d: 'M-62 -46 h124 v7 h-124 z M-62 -24 h124 v7 h-124 z', fill: '#c9a26b', stroke: '#8a6338', width: 2 },
+      { d: 'M-61 0 V-56 L-54 -66 L-47 -56 V0 Z M-25 0 V-56 L-18 -66 L-11 -56 V0 Z M11 0 V-56 L18 -66 L25 -56 V0 Z M47 0 V-56 L54 -66 L61 -56 V0 Z', fill: '#c9a26b', stroke: '#8a6338', width: 2 },
+    ],
+  },
+  flowers: {
+    scale: 0.7,
+    shapes: [
+      { d: 'M-40 0 a40 6 0 1 0 80 0 a40 6 0 1 0 -80 0', fill: '#000', alpha: 0.26 },
+      { d: 'M-26 0 V-44 M0 0 V-58 M24 0 V-40 M-8 0 V-30 M12 0 V-26', stroke: '#4a8a4a', width: 3 },
+      { d: 'M-32 -44 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0 M18 -40 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0', fill: 'accent' },
+      { d: 'M-6 -58 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0 M6 -26 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0', fill: 'station' },
+      { d: 'M-14 -30 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0', fill: 'accentL' },
+      { d: 'M-29 -44 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0 M-3 -58 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0 M21 -40 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0', fill: '#ffd27a' },
+    ],
+  },
+  palm: {
+    scale: 0.75,
+    shapes: [
+      { d: 'M-26 0 a26 6 0 1 0 52 0 a26 6 0 1 0 -52 0', fill: '#000', alpha: 0.26 },
+      { d: 'M0 0 C6 -50 -4 -100 12 -150', stroke: 'ink', width: 12 },
+      { d: 'M12 -150 C-18 -168 -46 -158 -62 -136 C-38 -150 -14 -152 12 -144 Z M12 -150 C42 -170 72 -160 88 -138 C64 -152 38 -154 12 -144 Z M12 -150 C2 -184 -24 -202 -48 -200 C-24 -190 -6 -174 8 -146 Z M12 -150 C24 -184 50 -200 74 -196 C50 -188 32 -172 16 -146 Z', fill: 'ink', stroke: 'station', width: 2.5 },
+      { d: 'M0 0 C6 -50 -4 -100 12 -150', stroke: 'accent', width: 2, alpha: 0.7 },
+    ],
+  },
+  arcade: {
+    scale: 0.78,
+    shapes: [
+      { d: 'M-34 0 a34 6 0 1 0 68 0 a34 6 0 1 0 -68 0', fill: '#000', alpha: 0.26 },
+      { d: 'M-30 0 V-118 L-22 -132 H22 L30 -118 V0 Z', fill: 'ink', stroke: 'accent', width: 2.5 },
+      { d: 'M-20 -112 h40 v32 h-40 z', fill: 'station' },
+      { d: 'M-34 -72 H34 L28 -54 H-28 Z', fill: 'bgD' },
+      { d: 'M-17 -64 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0', fill: 'accent' },
+      { d: 'M-1 -64 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0', fill: 'station' },
+      { d: 'M11 -64 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0', fill: 'accentL' },
+      { d: 'M-8 -126 h16 v6 h-16 z', fill: 'accent' },
+    ],
+  },
+  tree: {
+    scale: 0.8,
+    shapes: [
+      { d: 'M-40 0 a40 6 0 1 0 80 0 a40 6 0 1 0 -80 0', fill: '#000', alpha: 0.26 },
+      { d: 'M-8 0 V-70 h16 V0 Z', fill: '#7a5532' },
+      { d: 'M-44 -104 a44 44 0 1 0 88 0 a44 44 0 1 0 -88 0', fill: '#4f9f62' },
+      { d: 'M-54 -82 a28 28 0 1 0 56 0 a28 28 0 1 0 -56 0 M-4 -84 a30 30 0 1 0 60 0 a30 30 0 1 0 -60 0', fill: '#5cae6e' },
+      { d: 'M-24 -118 a12 12 0 1 0 24 0 a12 12 0 1 0 -24 0', fill: '#7cc78c', alpha: 0.6 },
+    ],
+  },
+  bench: {
+    scale: 0.74,
+    shapes: [
+      { d: 'M-56 0 a56 6 0 1 0 112 0 a56 6 0 1 0 -112 0', fill: '#000', alpha: 0.26 },
+      { d: 'M-48 -72 h7 v72 h-7 z M41 -72 h7 v72 h-7 z', fill: '#4a3a2a' },
+      { d: 'M-54 -34 h108 v9 h-108 z M-54 -58 h108 v8 h-108 z M-54 -72 h108 v8 h-108 z', fill: '#a07a4a' },
+    ],
+  },
+};
+
+const pathCache = new Map<string, Path2D>();
+function path(d: string): Path2D {
+  let p = pathCache.get(d);
+  if (!p) {
+    p = new Path2D(d);
+    pathCache.set(d, p);
+  }
+  return p;
+}
+
+function ink(name: Ink, theme: ResolvedTheme): string {
+  const { accent, station, background } = theme.palette;
+  switch (name) {
+    case 'accent':
+      return accent;
+    case 'accentD':
+      return shade(accent, -0.38);
+    case 'accentL':
+      return shade(accent, 0.45);
+    case 'station':
+      return station;
+    case 'stationD':
+      return shade(station, -0.35);
+    case 'ink':
+      return shade(background, -0.55);
+    case 'bgD':
+      return shade(background, -0.38);
+    default:
+      return name;
+  }
+}
+
+function drawMoodObject(ctx: CanvasRenderingContext2D, kind: MoodObject, bx: number, by: number, theme: ResolvedTheme) {
+  const { scale, shapes } = MOOD_SHAPES[kind];
+  const base = ctx.globalAlpha;
+  ctx.save();
+  ctx.translate(bx, by);
+  ctx.scale(scale, scale);
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  for (const s of shapes) {
+    ctx.globalAlpha = base * (s.alpha ?? 1);
+    const p = path(s.d);
+    if (s.fill) {
+      ctx.fillStyle = ink(s.fill, theme);
+      ctx.fill(p);
+    }
+    if (s.stroke) {
+      ctx.strokeStyle = ink(s.stroke, theme);
+      ctx.lineWidth = s.width ?? 2;
+      ctx.stroke(p);
+    }
+  }
+  ctx.restore();
+}
+
+/** Draw with a reaction pose applied around a base point, plus a soft light for glow. */
+function withPose(ctx: CanvasRenderingContext2D, bx: number, by: number, pose: Pose, lift: number, theme: ResolvedTheme, draw: () => void) {
+  ctx.save();
+  ctx.translate(bx + pose.dx, by + pose.dy);
+  ctx.rotate(pose.rot);
+  ctx.scale(pose.sx, pose.sy);
+  ctx.translate(-bx, -by);
+  draw();
+  ctx.restore();
+  if (pose.glow > 0) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    const g = ctx.createRadialGradient(bx, by - lift, 0, bx, by - lift, 54);
+    g.addColorStop(0, alpha(theme.palette.accent, 0.55 * pose.glow));
+    g.addColorStop(1, alpha(theme.palette.accent, 0));
+    ctx.fillStyle = g;
+    ctx.fillRect(bx - 60, by - lift - 60, 120, 120);
+    ctx.restore();
+  }
+}
+
+function drawScenery(ctx: CanvasRenderingContext2D, it: SceneryItem, theme: ResolvedTheme, time: number, pose: Pose) {
+  const mood = (['pumpkin', 'gravestone', 'fence', 'flowers', 'palm', 'arcade', 'tree', 'bench'] as const).includes(it.kind as MoodObject);
+  withPose(ctx, it.x, it.y, pose, 30, theme, () => {
+    if (mood) drawMoodObject(ctx, it.kind as MoodObject, it.x, it.y, theme);
+    else drawProp(ctx, it.kind as Prop, it.x, it.y - 22, theme, time);
+  });
+}
+
+function drawAmbient(ctx: CanvasRenderingContext2D, frame: Frame) {
+  const { theme, time, state, living } = frame;
+  const parts = ambientParticles(theme.mood, time, state.area, living.reduced);
+  const { accent, station, text } = theme.palette;
+  for (const p of parts) {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, Math.min(1, p.alpha));
+    ctx.translate(p.x, p.y);
+    switch (p.kind) {
+      case 'wisp': {
+        const g = ctx.createRadialGradient(0, 0, 0, 0, 0, p.size * 2.4);
+        g.addColorStop(0, alpha(text, 0.9));
+        g.addColorStop(1, alpha(text, 0));
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(0, 0, p.size * 2.4, 0, Math.PI * 2);
+        ctx.fill();
+        break;
+      }
+      case 'bat': {
+        const wing = 6 + p.angle * 5;
+        ctx.fillStyle = shade(theme.palette.background, -0.6);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.quadraticCurveTo(-9, -wing, -18, 2);
+        ctx.quadraticCurveTo(-9, -2, 0, 4);
+        ctx.quadraticCurveTo(9, -2, 18, 2);
+        ctx.quadraticCurveTo(9, -wing, 0, 0);
+        ctx.fill();
+        break;
+      }
+      case 'leaf':
+        ctx.rotate(p.angle);
+        ctx.fillStyle = shade(accent, -0.15);
+        ctx.beginPath();
+        ctx.ellipse(0, 0, p.size, p.size * 0.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+        break;
+      case 'firefly': {
+        const g = ctx.createRadialGradient(0, 0, 0, 0, 0, 10);
+        g.addColorStop(0, alpha('#fff2a8', 1));
+        g.addColorStop(0.3, alpha(accent, 0.6));
+        g.addColorStop(1, alpha(accent, 0));
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(0, 0, 10, 0, Math.PI * 2);
+        ctx.fill();
+        break;
+      }
+      case 'sparkle':
+        ctx.rotate(p.angle);
+        ctx.fillStyle = p.size > 4.5 ? station : accent;
+        ctx.beginPath();
+        for (let k = 0; k < 4; k++) {
+          ctx.rotate(Math.PI / 2);
+          ctx.moveTo(0, 0);
+          ctx.lineTo(p.size * 0.35, p.size * 0.35);
+          ctx.lineTo(0, p.size * 1.6);
+          ctx.lineTo(-p.size * 0.35, p.size * 0.35);
+        }
+        ctx.fill();
+        break;
+      case 'butterfly': {
+        const open = 0.45 + Math.abs(p.angle) * 0.55;
+        ctx.fillStyle = accent;
+        ctx.beginPath();
+        ctx.ellipse(-5 * open, -2, 6 * open, 4.5, -0.4, 0, Math.PI * 2);
+        ctx.ellipse(5 * open, -2, 6 * open, 4.5, 0.4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = station;
+        ctx.beginPath();
+        ctx.ellipse(-4 * open, 4, 4 * open, 3, -0.6, 0, Math.PI * 2);
+        ctx.ellipse(4 * open, 4, 4 * open, 3, 0.6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#2b2118';
+        ctx.fillRect(-1, -5, 2, 11);
+        break;
+      }
+    }
+    ctx.restore();
+  }
+}
+
+function drawDust(ctx: CanvasRenderingContext2D, dust: readonly Puff[], time: number, theme: ResolvedTheme) {
+  for (const puff of dust) {
+    const look = dustLook(puff, time);
+    if (!look) continue;
+    ctx.fillStyle = alpha(theme.palette.text, look.alpha * 0.7);
+    ctx.beginPath();
+    ctx.arc(puff.x, puff.y, look.r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+/** Check mark on a station the player has already opened. */
+function drawVisited(ctx: CanvasRenderingContext2D, area: Area, theme: ResolvedTheme) {
+  const off: Record<string, [number, number]> = { screen: [86, -54], terminal: [92, -58], exit: [56, -78] };
+  const o = off[area.station.kind];
+  if (!o) return;
+  const x = area.station.x + o[0];
+  const y = area.station.y + o[1];
+  ctx.fillStyle = theme.palette.accent;
+  ctx.beginPath();
+  ctx.arc(x, y, 13, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = '#111';
+  ctx.lineWidth = 3.5;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  ctx.moveTo(x - 6, y);
+  ctx.lineTo(x - 1.5, y + 5);
+  ctx.lineTo(x + 6.5, y - 5);
+  ctx.stroke();
+}
+
+function drawEntryCard(ctx: CanvasRenderingContext2D, frame: Frame, scene: Scene) {
+  const { living, time, state, world, theme } = frame;
+  if (state.area === 0) return;
+  const age = time - living.enteredAt;
+  const a = fade(age, 0.25, 1.5, 0.5);
+  if (a <= 0) return;
+  const slide = living.reduced ? 0 : (1 - Math.min(1, age / 0.25)) * -14;
+  const title = `Area ${state.area + 1} of ${world.length}`;
+  ctx.save();
+  ctx.globalAlpha = a;
+  ctx.font = `bold 22px ${FONT}`;
+  const caption = fitText(headline(frame.storyboard, scene), 560, measureWith(ctx));
+  const w = Math.max(ctx.measureText(caption).width, 160) + 56;
+  const x = WORLD_WIDTH / 2 - w / 2;
+  const y = 62 + slide;
+  ctx.fillStyle = alpha(theme.palette.background, 0.9);
+  roundRect(ctx, x, y, w, 70, 14);
+  ctx.fill();
+  ctx.strokeStyle = theme.palette.accent;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = `bold 13px ${FONT}`;
+  ctx.fillStyle = theme.palette.accent;
+  ctx.fillText(title.toUpperCase(), WORLD_WIDTH / 2, y + 21);
+  ctx.font = `bold 22px ${FONT}`;
+  ctx.fillStyle = theme.palette.text;
+  ctx.fillText(caption, WORLD_WIDTH / 2, y + 47);
+  ctx.restore();
+}
+
+function drawQuip(ctx: CanvasRenderingContext2D, frame: Frame) {
+  const { living, time, state, theme } = frame;
+  if (!living.quip) return;
+  const a = fade(time - living.quip.at, 0.12, 2, 0.35);
+  if (a <= 0) return;
+  ctx.save();
+  ctx.globalAlpha = a;
+  ctx.font = `bold 15px ${FONT}`;
+  const w = ctx.measureText(living.quip.text).width + 26;
+  const x = Math.max(WALL + 6, Math.min(WORLD_WIDTH - WALL - 6 - w, state.x - w / 2));
+  const y = state.y - 78;
+  ctx.fillStyle = '#fffdf6';
+  roundRect(ctx, x, y, w, 32, 14);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(state.x - 7, y + 32);
+  ctx.lineTo(state.x + 7, y + 32);
+  ctx.lineTo(state.x, y + 41);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = '#2b2118';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(living.quip.text, x + 13, y + 16.5);
+  ctx.restore();
+}
+
+function drawConfetti(ctx: CanvasRenderingContext2D, frame: Frame, area: Area) {
+  const { living, time, theme } = frame;
+  if (area.sceneType !== 'outro') return;
+  const pieces = confetti(time - living.enteredAt - 0.35, area.station.x, area.station.y + 40, living.reduced, 56);
+  const colors = [theme.palette.accent, theme.palette.station, theme.palette.text, '#ff6b9a'];
+  for (const p of pieces) {
+    ctx.save();
+    ctx.globalAlpha = p.alpha;
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot);
+    ctx.fillStyle = colors[p.color];
+    ctx.fillRect(-4, -2.5, 8, 5);
+    ctx.restore();
+  }
 }
 
 // ---------- overlays ----------
@@ -546,9 +934,14 @@ function drawHud(ctx: CanvasRenderingContext2D, frame: Frame, scene: Scene) {
   const counter = `Area ${state.area + 1} / ${world.length}`;
   ctx.fillText(counter, 26, 26);
   const counterW = ctx.measureText(counter).width;
+  const seen = `Seen ${frame.living.visited.size} / ${frame.living.stationsTotal}`;
+  ctx.textAlign = 'right';
+  ctx.fillText(seen, WORLD_WIDTH - 26, 26);
+  const seenW = ctx.measureText(seen).width;
+  ctx.textAlign = 'left';
   ctx.font = `15px ${FONT}`;
   ctx.fillStyle = text;
-  ctx.fillText(fitText(headline(frame.storyboard, scene), WORLD_WIDTH - 80 - counterW, measureWith(ctx)), 44 + counterW, 26);
+  ctx.fillText(fitText(headline(frame.storyboard, scene), WORLD_WIDTH - 100 - counterW - seenW, measureWith(ctx)), 44 + counterW, 26);
 }
 
 function drawHint(ctx: CanvasRenderingContext2D, theme: ResolvedTheme, hint: string) {
@@ -583,11 +976,6 @@ export function drawFrame(ctx: CanvasRenderingContext2D, frame: Frame): void {
     ctx.restore();
   }
 
-  theme.props.forEach((prop, i) => {
-    const slot = PROP_SLOTS[(i + area.index * 3) % PROP_SLOTS.length];
-    drawProp(ctx, prop, slot[0], slot[1], theme, time);
-  });
-
   const glow = state.nearStation ? 1 : 0;
   switch (scene.type) {
     case 'title':
@@ -605,10 +993,41 @@ export function drawFrame(ctx: CanvasRenderingContext2D, frame: Frame): void {
       break;
   }
 
-  drawAvatar(ctx, theme.avatar, state, theme, time, frame.moving);
+  const { living } = frame;
+  if (living.visited.has(area.index)) drawVisited(ctx, area, theme);
+  if (!living.reduced) drawDust(ctx, living.dust, time, theme);
+
+  // Scenery and the character in depth order: lower bases are nearer, so drawn later.
+  const feet = state.y + 22;
+  const layer: Array<{ y: number; draw: () => void }> = living.items.map((it) => ({
+    y: it.y,
+    draw: () => {
+      // An object in front of the character turns see-through, so the character never disappears behind it.
+      const [w, h] = SIZE[it.kind];
+      const hiding = it.y > feet && Math.abs(it.x - state.x) < w / 2 + 12 && feet > it.y - h - 8;
+      ctx.save();
+      if (hiding) ctx.globalAlpha = 0.45;
+      drawScenery(ctx, it, theme, time, reaction(it.kind, time - (living.pokedAt.get(it.slot) ?? -9), living.reduced));
+      ctx.restore();
+    },
+  }));
+  layer.push({
+    y: feet,
+    draw: () =>
+      withPose(ctx, state.x, feet, reaction('avatar', time - living.avatarPokedAt, living.reduced), 26, theme, () =>
+        drawAvatar(ctx, theme.avatar, state, theme, time, frame.moving, living.reduced),
+      ),
+  });
+  layer.sort((a, b) => a.y - b.y).forEach((l) => l.draw());
+
+  drawAmbient(ctx, frame);
   drawWalls(ctx, area, theme);
   drawVignette(ctx, theme);
   drawHud(ctx, frame, scene);
   if (state.nearStation && !state.panelOpen) drawPrompt(ctx, area, theme, frame.prompt, time);
   if (area.index === 0 && frame.hint) drawHint(ctx, theme, frame.hint);
+  drawEntryCard(ctx, frame, scene);
+  drawQuip(ctx, frame);
+  // On top of everything, so the entry card never hides it.
+  drawConfetti(ctx, frame, area);
 }

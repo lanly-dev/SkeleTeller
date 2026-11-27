@@ -158,3 +158,18 @@ Run on 2026-11-20 in the Kiro IDE. Browser checks used headless Edge (Chromium) 
 | 9 | Hosting | **Pass.** After Pages was enabled, run 44808628929 (commit `0ab8dae`) built and deployed. The keyboard tour of the sample completed at https://lanly-dev.github.io/SkeleTeller/quest/ with no console errors. |
 | 10 | Safe rendering | **Pass.** A caption of `<b>Bold?</b><img src=x onerror=alert(1)>` and a callout label with `<i>` show as plain text, create no elements and open no dialog. A path with `../` that leaves the storyboard folder fails the build. Links are http(s) only (tests). |
 | 11 | Performance and compatibility | **Partly verified.** About 60 frames per second (121 frames in 2 s, headless Edge). The canvas keeps 16:9 at 1280 by 760 and 900 by 900. **Open:** Firefox and Safari were not tested. |
+## Acceptance record, living world (12 to 16)
+
+Run on 2026-11-26 in headless Edge with real key and mouse events. This machine
+reports reduced motion by default, so the normal-motion run forced
+`prefers-reduced-motion: no-preference` and a second run checked reduced motion.
+Fixtures: `demo/storyboard.yml` (spooky, ghost), the TaskFlow sample (clean,
+explorer), and cozy and neon copies of it outside the repo.
+
+| # | Requirement | Result |
+|---|---|---|
+| 12 | Fuller areas | **Pass.** All four moods show their two objects and ambient life (wisps and bats, leaves, sparkles, butterflies). Depth order works: the explorer stands behind the fence. `living.test.ts` checks that no object covers a station, the title sign or a doorway in any area or mood. Found by screenshot and fixed: a tree hid the character completely, so objects in front of the character now turn see-through. |
+| 13 | A world that responds | **Pass.** Walking past the pumpkin made it react; pressing E next to it gave "The pumpkin grins back at me."; tapping the gravestone made it react and gave "Rest in peace, old bug." Every kind has a reaction and a line (unit tests). Objects do not block movement. |
+| 14 | A livelier character | **Pass.** Legs swing while walking (explorer, robot), the ghost's hem ripples faster, dust puffs trail behind, and the character hops when it opens a station. |
+| 15 | Area and progress feedback | **Pass.** Entry card on each area after the first; opening the area 2 station changed "Seen 0 / 6" to "Seen 1 / 6" and added a check mark; confetti burst at the exit. Nothing is gated or scored. |
+| 16 | Reduced motion | **Pass.** With reduced motion, no wisps, bats, dust or confetti were drawn, and a tapped object only glowed. |

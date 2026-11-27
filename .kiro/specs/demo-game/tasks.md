@@ -111,3 +111,4 @@ hosting.
 
 - **2026-11-20, Kiro IDE:** T12 README written. Acceptance run recorded at the end of `requirements.md`: 8 of 11 pass in full, 4 passes in emulation pending a real phone, 9 (hosting) waits on enabling Pages, and 11 is missing Firefox and Safari.
 - **2026-11-20:** Pages enabled; the deploy succeeded and the live keyboard tour passed. Requirement 9 now passes: 9 of 11 in full. Still open: a real-phone check (4) and Firefox and Safari (11).
+- **2026-11-26, Kiro IDE:** T13 to T17 done. `scenery.ts`, `effects.ts` and `ambient.ts` are pure and tested (18 tests in `living.test.ts`); `draw.ts` draws mood objects, depth order, reactions, ambient life, dust, check marks, the entry card, quips and confetti; `main.ts` wires brushing, E, taps and the visited set without changing `game.ts`. Acceptance for 12 to 16 recorded in `requirements.md`.

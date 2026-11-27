@@ -88,6 +88,17 @@ and from a subpath. `.github/workflows/pages.yml` publishes it to GitHub Pages a
 `/quest/` on every push to `main`. It builds from `demo/storyboard.yml` when the
 repository has one, and from the sample until then.
 
+## A living world
+
+Each area also has two scenery objects that belong to the mood (pumpkin and
+gravestone, fence and flowers, palm and arcade cabinet, tree and bench) and gentle
+ambient life (wisps and bats, falling leaves and fireflies, neon sparkles,
+butterflies). Things react when the character walks past them, when you press E
+beside them, or when you tap them, and the character says a short line about them.
+Opened stations get a check mark and the bar shows how many you have seen. None of
+this is a score or a gate: every door is always open. With reduced motion turned
+on, the ambient life and particles stop and reactions become a short glow.
+
 ## Scope
 
 One fixed engine: walk and interact only. No combat, enemies, inventory, puzzles,
